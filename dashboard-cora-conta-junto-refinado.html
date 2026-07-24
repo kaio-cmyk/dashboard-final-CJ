@@ -9,24 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#100F26;
-    --panel:#1A1934;
-    --panel-2:#211F42;
-    --border-color:#33305C;
-    --line:#3A3768;
-    --text-primary:#F4F2FF;
-    --text-secondary:#A6A3CC;
-    --ink:#F4F2FF;
-    --cora:#8C63F7;
-    --cora-soft:rgba(140,99,247,.16);
-    --gold:#F6B93B;
-    --gold-soft:rgba(246,185,59,.14);
-    --green:#33D69F;
-    --rust:#F2755C;
-    --slate:#8A87AD;
-    --blue:#5B9CF2;
-    --blue-soft:rgba(91,156,242,.14);
-    --maroon:#D65C82;
+    --bg:#F3F4F8;
+    --panel:#FFFFFF;
+    --panel-2:#FCFCFE;
+    --border-color:#E4E7EE;
+    --line:#E7E9F0;
+    --text-primary:#171A22;
+    --text-secondary:#667085;
+    --ink:#171A22;
+    --cora:#E31C56;
+    --cora-soft:rgba(227,28,86,.10);
+    --cj:#3654E0;
+    --cj-soft:rgba(54,84,224,.10);
+    --green:#16A34A;
+    --rust:#DC5B2E;
+    --slate:#64748B;
+    --blue:#2E86D6;
+    --blue-soft:rgba(46,134,214,.12);
+    --maroon:#9C2F56;
 
     /* spacing scale — used consistently everywhere below */
     --space-2xs: 8px;
@@ -49,7 +49,7 @@
     --font-xl:   32px;
     --font-hero: clamp(38px, 6vw, 54px);
 
-    --shadow-card: 0 14px 32px -20px rgba(0,0,0,.55);
+    --shadow-card: 0 2px 14px -4px rgba(23,26,34,.10);
     --content-max: 1760px;
   }
   *{ box-sizing:border-box; }
@@ -57,8 +57,8 @@
   html, body{ height:100%; margin:0; overflow:hidden; }
   body{
     background:
-      radial-gradient(ellipse 1200px 700px at 12% -10%, rgba(140,99,247,.14), transparent 60%),
-      radial-gradient(ellipse 900px 600px at 105% 10%, rgba(246,185,59,.07), transparent 55%),
+      radial-gradient(ellipse 1200px 700px at 12% -10%, rgba(227,28,86,.05), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 105% 10%, rgba(54,84,224,.06), transparent 55%),
       var(--bg);
     color:var(--text-primary);
     font-family:'Inter', sans-serif;
@@ -80,14 +80,14 @@
   .brand{ display:flex; align-items:center; gap:var(--space-sm); min-width:0; }
   .brand .glyph{
     width:48px; height:48px; min-width:48px; border-radius:22%;
-    background:linear-gradient(155deg, var(--cora), #5B2FD9);
+    background:linear-gradient(155deg, var(--cora), #B0143F);
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
     font-family:'Fraunces', serif; font-weight:600; color:#fff; font-size:var(--font-md);
-    box-shadow:0 6px 18px -6px rgba(140,99,247,.4);
+    box-shadow:0 6px 18px -6px rgba(227,28,86,.35);
   }
   .brand .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); letter-spacing:.13em; text-transform:uppercase; color:var(--text-secondary); font-weight:600; line-height:1.5; }
   .brand h1{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(24px, 3vw, 34px); margin:4px 0 0; letter-spacing:-0.01em; line-height:1.25; }
-  .brand h1 em{ color:var(--gold); font-style:italic; font-weight:500; }
+  .brand h1 em{ color:var(--cora); font-style:italic; font-weight:500; }
 
   .headright{ display:flex; align-items:center; gap:var(--space-md); flex-shrink:0; }
   .clock{ text-align:right; font-family:'IBM Plex Mono', monospace; line-height:1.4; }
@@ -131,7 +131,7 @@
   .donut-wrap{ position:relative; width:min(200px, 22vh); height:min(200px, 22vh); min-width:130px; min-height:130px; flex-shrink:0; margin:0 auto; }
   .donut-wrap svg circle{ transition: stroke-dasharray .6s ease, stroke-dashoffset .6s ease; }
   .donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--space-xs); overflow:hidden; }
-  .donut-center .n{ font-family:'Fraunces', serif; font-weight:700; font-size:clamp(28px, 4vh, var(--font-hero)); color:var(--gold); line-height:1; }
+  .donut-center .n{ font-family:'Fraunces', serif; font-weight:700; font-size:clamp(28px, 4vh, var(--font-hero)); color:var(--cj); line-height:1; }
   .donut-center .l{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); margin-top:6px; letter-spacing:.03em; line-height:1.3; }
   .donut-center .v{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-sm); color:var(--ink); font-weight:700; margin-top:6px; }
 
@@ -142,8 +142,8 @@
   .legend-row .lname{ font-size:var(--font-md); font-weight:600; line-height:1.35; }
   .legend-row .lsub{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); line-height:1.5; }
   .legend-row .lval{ margin-left:auto; padding-left:var(--space-md); font-family:'IBM Plex Mono', monospace; font-size:var(--font-lg); font-weight:700; flex-shrink:0; }
-  .legend-row.opp .lval{ color:var(--gold); }
-  .legend-row.opp .lname{ color:var(--gold); }
+  .legend-row.opp .lval{ color:var(--cj); }
+  .legend-row.opp .lname{ color:var(--cj); }
 
   /* ---- stats column ---- */
   .stats-col{ display:flex; flex-direction:column; gap:var(--space-sm); min-width:0; min-height:0; height:100%; }
@@ -154,7 +154,7 @@
     box-shadow:var(--shadow-card); min-width:0;
   }
   .kpi-tile .lbl{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); font-weight:600; line-height:1.4; }
-  .kpi-tile .val{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-xl); line-height:1.2; color:var(--gold); word-break:break-word; }
+  .kpi-tile .val{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-xl); line-height:1.2; color:var(--cj); word-break:break-word; }
   .kpi-tile .val small{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-md); font-weight:600; color:var(--text-secondary); margin-left:6px; }
   .kpi-tile.alt .val{ color:var(--cora); }
 
@@ -190,11 +190,11 @@
   .carousel-head .panel-title{ margin-bottom:0; flex:1; min-width:0; }
   .rot-dots{ display:flex; gap:6px; align-items:center; }
   .rot-dots .d{ width:6px; height:6px; border-radius:50%; background:var(--line); transition:.2s; }
-  .rot-dots .d.active{ background:var(--gold); width:20px; border-radius:4px; }
+  .rot-dots .d.active{ background:var(--cj); width:20px; border-radius:4px; }
   .rot-counter{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); font-weight:600; letter-spacing:.04em; white-space:nowrap; }
   .rot-track{ width:70px; height:2px; background:var(--line); border-radius:2px; overflow:hidden; margin-left:var(--space-sm); flex-shrink:0; }
   .rot-track.wide{ width:120px; }
-  .rot-bar{ height:100%; width:0%; background:var(--gold); }
+  .rot-bar{ height:100%; width:0%; background:var(--cj); }
   .rot-bar.animate{ transition:width linear; }
 
   .card-grid{ display:flex; align-items:center; justify-content:center; min-height:15vh; max-height:26vh; overflow-y:auto; padding:4px 0; }
@@ -207,13 +207,13 @@
   .client-spotlight .cs-meta-item{ display:flex; flex-direction:column; align-items:center; gap:4px; min-width:150px; }
   .client-spotlight .cs-meta-item .k{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); font-weight:600; }
   .client-spotlight .cs-meta-item .v{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-xl); color:var(--ink); }
-  .client-spotlight .cs-meta-item .v.gold{ color:var(--gold); }
+  .client-spotlight .cs-meta-item .v.gold{ color:var(--cj); }
 
   .pill{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; padding:4px 11px; border-radius:99px; white-space:nowrap; flex-shrink:0; }
-  .pill.INACTIVE{ background:var(--gold-soft); color:var(--gold); }
+  .pill.INACTIVE{ background:var(--cj-soft); color:var(--cj); }
   .pill.WAITING_REGISTRATION{ background:var(--cora-soft); color:var(--cora); }
   .pill.WAITING_ANALYSIS{ background:var(--blue-soft); color:var(--blue); }
-  .type-badge{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; padding:3px 9px; border-radius:6px; background:rgba(255,255,255,.06); color:var(--text-secondary); }
+  .type-badge{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; padding:3px 9px; border-radius:6px; background:rgba(23,26,34,.06); color:var(--text-secondary); }
 
   .empty-note{ display:flex; align-items:center; justify-content:center; min-height:100px; color:var(--text-secondary); font-size:var(--font-md); font-family:'IBM Plex Mono', monospace; text-align:center; padding:var(--space-md); line-height:1.5; }
 
@@ -318,8 +318,8 @@ const STATUS_LABEL = {
 };
 const STATUS_ORDER = ["ACTIVE","WAITING_REGISTRATION","INACTIVE","WAITING_ANALYSIS","CHURN","EXPIRED","REPROVED"];
 const STATUS_COLOR = {
-  ACTIVE:"#33D69F", WAITING_REGISTRATION:"#8C63F7", INACTIVE:"#F6B93B", WAITING_ANALYSIS:"#5B9CF2",
-  CHURN:"#F2755C", EXPIRED:"#8A87AD", REPROVED:"#D65C82"
+  ACTIVE:"#16A34A", WAITING_REGISTRATION:"#E31C56", INACTIVE:"#3654E0", WAITING_ANALYSIS:"#2E86D6",
+  CHURN:"#DC5B2E", EXPIRED:"#64748B", REPROVED:"#9C2F56"
 };
 const OPPORTUNITY_STATUSES = ["INACTIVE","WAITING_REGISTRATION","WAITING_ANALYSIS"];
 const STATUS_DEF = {
@@ -567,20 +567,20 @@ function refreshDashboard(clients){
 
   // donut
   renderDonut([
-    { label:'Oportunidade', value:oppClients.length, color:'#F6B93B', emph:true },
-    { label:'Ativo', value:activeClients.length, color:'#33D69F' },
-    { label:'Cliente Sem Movimento (30 dias)', value:churnClients.length, color:'#F2755C' },
-    { label:'Encerrado', value:closedClients.length, color:'#8A87AD' },
+    { label:'Oportunidade', value:oppClients.length, color:'#3654E0', emph:true },
+    { label:'Ativo', value:activeClients.length, color:'#16A34A' },
+    { label:'Cliente Sem Movimento (30 dias)', value:churnClients.length, color:'#DC5B2E' },
+    { label:'Encerrado', value:closedClients.length, color:'#64748B' },
   ]);
   document.getElementById('donutN').textContent = oppClients.length;
   document.getElementById('donutV').textContent = fmtBRL(oppValue) + '/mês';
 
   // legend
   const legendData = [
-    { cls:'opp', color:'#F6B93B', name:'Oportunidade', sub:'inativo + aguardando cadastro/análise', n:oppClients.length },
-    { cls:'', color:'#33D69F', name:'Ativo', sub:'gerando comissão', n:activeClients.length },
-    { cls:'', color:'#F2755C', name:'Cliente Sem Movimento (30 dias)', sub:'ativou e parou de usar', n:churnClients.length },
-    { cls:'', color:'#8A87AD', name:'Encerrado', sub:'expirado ou reprovado', n:closedClients.length },
+    { cls:'opp', color:'#3654E0', name:'Oportunidade', sub:'inativo + aguardando cadastro/análise', n:oppClients.length },
+    { cls:'', color:'#16A34A', name:'Ativo', sub:'gerando comissão', n:activeClients.length },
+    { cls:'', color:'#DC5B2E', name:'Cliente Sem Movimento (30 dias)', sub:'ativou e parou de usar', n:churnClients.length },
+    { cls:'', color:'#64748B', name:'Encerrado', sub:'expirado ou reprovado', n:closedClients.length },
   ];
   document.getElementById('legendCol').innerHTML = legendData.map(l => `
     <div class="legend-row ${l.cls}">
