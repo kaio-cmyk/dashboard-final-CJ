@@ -110,14 +110,34 @@
   .panel-title > *{ min-width:0; overflow-wrap:break-word; }
   .panel-title b{ color:var(--ink); font-weight:700; }
 
+  /* ---- hero: âncora visual no topo do painel ---- */
+  .hero-count{
+    flex:0 0 auto; text-align:center; padding:var(--space-md) var(--space-md) 0;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .hero-num{
+    font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-hero); line-height:1;
+    background:linear-gradient(120deg, var(--cora), var(--cj));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-label{
+    font-family:'IBM Plex Mono', monospace; font-size:var(--font-sm); font-weight:600;
+    text-transform:uppercase; letter-spacing:.08em; color:var(--text-secondary);
+  }
+  .hero-divider{
+    flex:0 0 auto; height:1px; margin:var(--space-md) 0;
+    background:linear-gradient(90deg, transparent, var(--border-color) 15%, var(--border-color) 85%, transparent);
+  }
+
   /* ---- lista de todos os contratos: grid de cartões numerados ---- */
-  #monthCountBadge{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; color:var(--cj); text-transform:none; letter-spacing:0; }
 
   .contract-list{
-    list-style:none; margin:0; padding:2px 2px var(--space-xs); flex:1; min-height:0; overflow-y:auto;
+    list-style:none; margin:0; padding:2px 2px var(--space-sm); flex:1; min-height:0; overflow-y:auto;
     display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    grid-auto-rows:min-content;
     gap:var(--space-md);
-    align-content:start;
+    align-content:center;
+    justify-content:center;
   }
 
   @keyframes chipIn{
@@ -195,7 +215,11 @@
 
     <main class="main-full">
       <div class="panel">
-        <div class="panel-title">Todos os contratos fechados <span id="monthCountBadge"></span></div>
+        <div class="hero-count">
+          <div class="hero-num" id="heroCount">0</div>
+          <div class="hero-label" id="heroLabel">novos contratos fechados este mês</div>
+        </div>
+        <div class="hero-divider"></div>
         <ul class="contract-list" id="contractList"></ul>
         <div class="diag" id="diag"></div>
       </div>
@@ -329,10 +353,18 @@ function isSameMonth(d, ref){ return d && d.getFullYear()===ref.getFullYear() &&
 /* ===================== LISTA COMPLETA DE CONTRATOS ===================== */
 function renderContractList(items){
   const el = document.getElementById('contractList');
-  const badge = document.getElementById('monthCountBadge');
+  const heroCount = document.getElementById('heroCount');
+  const heroLabel = document.getElementById('heroLabel');
+  const now = new Date();
+  const monthName = MONTH_NAMES[now.getMonth()];
+
+  heroCount.textContent = items.length;
+  heroLabel.textContent = items.length === 1
+    ? `novo contrato fechado em ${monthName}`
+    : `novos contratos fechados em ${monthName}`;
+
   if(!items.length){
     el.innerHTML = '';
-    badge.textContent = '';
     el.parentElement.querySelector('.empty-note')?.remove();
     const note = document.createElement('div');
     note.className = 'empty-note';
@@ -340,7 +372,7 @@ function renderContractList(items){
     el.after(note);
     return;
   }
-  badge.textContent = `· ${items.length} contrato${items.length===1?'':'s'}`;
+  el.parentElement.querySelector('.empty-note')?.remove();
   el.innerHTML = items.map((c, i) => {
     const accent = i % 2 === 0 ? 'var(--cora)' : 'var(--cj)';
     return `
