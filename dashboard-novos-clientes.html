@@ -114,9 +114,9 @@
   #monthCountBadge{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; color:var(--cj); text-transform:none; letter-spacing:0; }
 
   .contract-list{
-    list-style:none; margin:0; padding:2px; flex:1; min-height:0; overflow-y:auto;
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
-    gap:var(--space-sm);
+    list-style:none; margin:0; padding:2px 2px var(--space-xs); flex:1; min-height:0; overflow-y:auto;
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    gap:var(--space-md);
     align-content:start;
   }
 
@@ -126,9 +126,9 @@
   }
 
   .contract-item{
-    position:relative; overflow:hidden;
-    display:flex; align-items:center; gap:var(--space-sm);
-    padding:var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
+    position:relative; overflow:hidden; min-height:88px;
+    display:flex; align-items:center; gap:var(--space-md);
+    padding:var(--space-md) var(--space-lg) var(--space-md) var(--space-md);
     background:linear-gradient(175deg, var(--panel), var(--panel-2));
     border:1px solid var(--border-color); border-radius:var(--radius-md);
     box-shadow:var(--shadow-card);
@@ -140,19 +140,19 @@
     background:var(--accent, var(--cj));
   }
   .contract-item .rank{
-    flex-shrink:0; width:38px; height:38px; border-radius:50%;
+    flex-shrink:0; width:44px; height:44px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg, var(--cora), var(--cj));
-    color:#fff; font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:var(--font-sm);
-    box-shadow:0 3px 10px -3px rgba(23,26,34,.35);
+    color:#fff; font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:var(--font-base);
+    box-shadow:0 4px 12px -3px rgba(23,26,34,.35);
   }
   .contract-item .c-name{
     font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-md); color:var(--ink);
-    line-height:1.3; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
+    line-height:1.35; letter-spacing:-.01em; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   }
   .contract-item .spark{
-    position:absolute; top:10px; right:12px; width:7px; height:7px; border-radius:50%;
+    position:absolute; top:12px; right:14px; width:7px; height:7px; border-radius:50%;
     background:var(--accent, var(--cj)); opacity:.55;
   }
 
