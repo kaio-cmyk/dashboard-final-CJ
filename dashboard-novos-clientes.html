@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novos Contratos — Conta Junto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F4F8;
+    --panel:#FFFFFF;
+    --panel-2:#FCFCFE;
+    --border-color:#E4E7EE;
+    --line:#E7E9F0;
+    --text-primary:#171A22;
+    --text-secondary:#667085;
+    --ink:#171A22;
+    --cora:#E31C56;
+    --cora-soft:rgba(227,28,86,.10);
+    --cj:#3654E0;
+    --cj-soft:rgba(54,84,224,.10);
+    --green:#16A34A;
+    --rust:#DC5B2E;
+    --slate:#64748B;
+    --blue:#2E86D6;
+    --blue-soft:rgba(46,134,214,.12);
+    --maroon:#9C2F56;
+
+    --space-2xs: 8px;
+    --space-xs:  12px;
+    --space-sm:  16px;
+    --space-md:  20px;
+    --space-lg:  28px;
+    --space-xl:  36px;
+
+    --radius-sm: 12px;
+    --radius-md: 16px;
+
+    --font-xs:   13px;
+    --font-sm:   14.5px;
+    --font-base: 16px;
+    --font-md:   19px;
+    --font-lg:   26px;
+    --font-xl:   32px;
+    --font-hero: clamp(38px, 6vw, 54px);
+
+    --shadow-card: 0 2px 14px -4px rgba(23,26,34,.10);
+    --content-max: 1760px;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; height:100%; }
+  html, body{ height:100%; margin:0; overflow:hidden; }
+  body{
+    background:
+      radial-gradient(ellipse 1200px 700px at 12% -10%, rgba(54,84,224,.06), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 105% 10%, rgba(227,28,86,.05), transparent 55%),
+      var(--bg);
+    color:var(--text-primary);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .dashboard{
+    max-width:var(--content-max);
+    height:100vh;
+    margin:0 auto;
+    padding: clamp(14px, 1.8vh, 24px) clamp(20px, 3vw, 40px);
+    display:flex;
+    flex-direction:column;
+    gap: clamp(10px, 1.4vh, 18px);
+    overflow:hidden;
+  }
+
+  /* ---------------- HEADER ---------------- */
+  header{ flex:0 0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-md); }
+  .brand{ display:flex; align-items:center; gap:var(--space-sm); min-width:0; }
+  .brand .glyph{
+    width:48px; height:48px; min-width:48px; border-radius:22%;
+    background:linear-gradient(155deg, var(--cj), #1F35A8);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'Fraunces', serif; font-weight:600; color:#fff; font-size:var(--font-md);
+    box-shadow:0 6px 18px -6px rgba(54,84,224,.35);
+  }
+  .brand .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); letter-spacing:.13em; text-transform:uppercase; color:var(--text-secondary); font-weight:600; line-height:1.5; }
+  .brand h1{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(24px, 3vw, 34px); margin:4px 0 0; letter-spacing:-0.01em; line-height:1.25; }
+  .brand h1 em{ color:var(--cj); font-style:italic; font-weight:500; }
+
+  .headright{ display:flex; align-items:center; gap:var(--space-md); flex-shrink:0; }
+  .clock{ text-align:right; font-family:'IBM Plex Mono', monospace; line-height:1.4; }
+  .clock .time{ font-size:var(--font-lg); font-weight:600; letter-spacing:.02em; }
+
+  /* ---------------- KPI ROW ---------------- */
+  .kpi-row{ flex:0 0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:var(--space-sm); }
+  .kpi-tile{
+    background:linear-gradient(175deg, var(--panel), var(--panel-2)); border:1px solid var(--border-color); border-radius:var(--radius-md);
+    padding:var(--space-md) var(--space-lg); display:flex; flex-direction:column; justify-content:center; gap:6px;
+    box-shadow:var(--shadow-card); min-width:0;
+  }
+  .kpi-tile .lbl{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); font-weight:600; line-height:1.4; }
+  .kpi-tile .val{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-xl); line-height:1.2; color:var(--cj); word-break:break-word; }
+  .kpi-tile .val small{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-md); font-weight:600; color:var(--text-secondary); margin-left:6px; }
+  .kpi-tile.alt .val{ color:var(--cora); }
+  .kpi-tile.neutral .val{ color:var(--ink); }
+
+  /* ---------------- MAIN GRID ---------------- */
+  main{ flex:1 1 auto; min-height:0; display:grid; grid-template-columns: minmax(320px, .85fr) minmax(340px, 1.15fr); gap:var(--space-md); align-items:stretch; }
+
+  .panel{
+    background:linear-gradient(175deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border-color); border-radius:var(--radius-md); padding:var(--space-md);
+    box-shadow:var(--shadow-card);
+    min-height:0; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .panel-title{
+    font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.08em;
+    color:var(--text-secondary); font-weight:600; margin:0 0 var(--space-sm); flex:0 0 auto;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px var(--space-sm);
+    line-height:1.5;
+  }
+  .panel-title > *{ min-width:0; overflow-wrap:break-word; }
+  .panel-title b{ color:var(--ink); font-weight:700; }
+
+  /* ---- ranking por responsável ---- */
+  #rankingList{ flex:1; min-height:0; display:flex; flex-direction:column; gap:var(--space-xs); overflow-y:auto; justify-content:center; }
+  .rank-row{ display:grid; grid-template-columns: minmax(90px, 170px) 1fr auto; align-items:center; gap:var(--space-sm); padding:6px 0; }
+  .rank-label{ font-size:var(--font-base); font-weight:600; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rank-track{ height:10px; background:var(--line); border-radius:99px; overflow:hidden; }
+  .rank-fill{ height:100%; border-radius:99px; background:var(--cj); transition:width .5s ease; }
+  .rank-val{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-base); font-weight:700; text-align:right; white-space:nowrap; line-height:1.4; color:var(--ink); }
+
+  /* ---- spotlight de cliente novo ---- */
+  .carousel-head{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px var(--space-md); margin-bottom:8px; }
+  .carousel-head .panel-title{ margin-bottom:0; flex:1; min-width:0; }
+  .rot-counter{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); font-weight:600; letter-spacing:.04em; white-space:nowrap; }
+  .rot-track{ width:70px; height:2px; background:var(--line); border-radius:2px; overflow:hidden; margin-left:var(--space-sm); flex-shrink:0; }
+  .rot-bar{ height:100%; width:0%; background:var(--cj); }
+  .rot-bar.animate{ transition:width linear; }
+
+  #clientSpotlight{ flex:1; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .client-spotlight{ width:100%; max-width:640px; margin:0 auto; text-align:center; display:flex; flex-direction:column; align-items:center; gap:8px; animation:fadeIn .4s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+  .client-spotlight .cs-top{ display:flex; align-items:center; justify-content:center; gap:var(--space-sm); flex-wrap:wrap; }
+  .client-spotlight .cs-badge{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); font-weight:700; padding:4px 11px; border-radius:99px; background:var(--cj-soft); color:var(--cj); white-space:nowrap; }
+  .client-spotlight .cs-name{ font-family:'Fraunces', serif; font-weight:700; font-size:clamp(20px, 3.4vh, 38px); line-height:1.25; color:var(--ink); word-break:break-word; }
+  .client-spotlight .cs-sub{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-sm); color:var(--text-secondary); letter-spacing:.03em; }
+  .client-spotlight .cs-meta{ display:flex; flex-wrap:wrap; justify-content:center; gap:var(--space-xl); margin-top:6px; padding-top:10px; border-top:1px solid var(--border-color); width:100%; max-width:520px; }
+  .client-spotlight .cs-meta-item{ display:flex; flex-direction:column; align-items:center; gap:4px; min-width:130px; }
+  .client-spotlight .cs-meta-item .k{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); font-weight:600; }
+  .client-spotlight .cs-meta-item .v{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-lg); color:var(--ink); }
+  .client-spotlight .cs-meta-item .v.pink{ color:var(--cora); }
+
+  .empty-note{ display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--text-secondary); font-size:var(--font-md); font-family:'IBM Plex Mono', monospace; text-align:center; padding:var(--space-md); line-height:1.5; }
+
+  .diag{
+    margin-top:var(--space-sm); padding:var(--space-sm); border-radius:var(--radius-sm);
+    border:1px solid rgba(220,38,38,.35); background:rgba(220,38,38,.06); color:#9C2F2F;
+    font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); line-height:1.5; display:none;
+  }
+  .diag.show{ display:block; }
+
+  @media (max-width: 1100px){
+    main{ grid-template-columns:1fr; }
+    html, body{ height:auto; overflow:auto; }
+    .dashboard{ height:auto; overflow:visible; }
+  }
+  @media (max-width: 640px){
+    .dashboard{ padding: var(--space-sm) var(--space-sm) var(--space-md); gap:var(--space-sm); }
+    .kpi-row{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="dashboard">
+
+    <header>
+      <div class="brand">
+        <div class="glyph">CJ</div>
+        <div>
+          <div class="eyebrow">Painel comercial · Novos contratos</div>
+          <h1>Contratos fechados <em id="monthLabel">este mês</em></h1>
+        </div>
+      </div>
+      <div class="headright">
+        <div class="clock">
+          <div class="time" id="clockTime">--:--</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="kpi-row">
+      <div class="kpi-tile">
+        <div class="lbl">Novos contratos no mês</div>
+        <div class="val" id="kpiCount">—</div>
+      </div>
+      <div class="kpi-tile alt">
+        <div class="lbl">Valor total fechado</div>
+        <div class="val" id="kpiValue">—</div>
+      </div>
+      <div class="kpi-tile neutral">
+        <div class="lbl">Ticket médio</div>
+        <div class="val" id="kpiAvg">—</div>
+      </div>
+    </div>
+
+    <main>
+      <div class="panel">
+        <div class="panel-title">Contratos por responsável</div>
+        <div id="rankingList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="carousel-head">
+          <div class="panel-title" style="margin-bottom:0;">Últimos clientes fechados</div>
+          <div style="display:flex; align-items:center;">
+            <span class="rot-counter" id="rotCounter"></span>
+            <div class="rot-track"><div class="rot-bar" id="rotBar"></div></div>
+          </div>
+        </div>
+        <div id="clientSpotlight"></div>
+        <div class="diag" id="diag"></div>
+      </div>
+    </main>
+
+  </div>
+
+<script>
+/* ===================== CONFIG / DATA SOURCE ===================== */
+const SHEET_ID = "16tFONc6OM2Z0I1q89jpPet9ulcgqOblsvGteaZHn8TY";
+const SHEET_TAB_CANDIDATES = ["[Novos Clientes]", "Novos Clientes"];
+const GVIZ_URL = (tabName) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=` + Date.now();
+const AUTO_REFRESH_MS = 5 * 60 * 1000; // 5 minutos
+const SPOTLIGHT_ROTATE_MS = 6000;
+
+/* ===================== DETECÇÃO FLEXÍVEL DE COLUNAS =====================
+   Não temos acesso à planilha (é privada) para conferir o cabeçalho exato
+   da aba [Novos Clientes], então tentamos várias variações comuns de nome
+   de coluna. Se os nomes reais forem diferentes, ajuste as listas abaixo
+   ou me envie um CSV de exemplo que eu calibro certinho. */
+const FIELD_CANDIDATES = {
+  date:        ["Data de Fechamento", "Data Fechamento", "Data do Contrato", "Data de Assinatura", "Fechamento", "Data"],
+  name:        ["Cliente - Nome", "Cliente Nome", "Nome do Cliente", "Razão Social", "Cliente", "Nome"],
+  cnpj:        ["CNPJ", "Cliente - CNPJ", "Cliente - Código", "Código do Cliente"],
+  responsible: ["Responsável Comercial", "Comercial - Responsável", "Responsável", "Vendedor", "Comercial", "Closer"],
+  value:       ["Valor do Contrato", "Valor Fechado", "Valor Mensal", "Mensalidade", "Valor", "Ticket"],
+  plan:        ["Plano", "Serviço", "Tipo de Contrato", "Produto"],
+};
+
+function normHeader(h){
+  return String(h||"").trim().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,""); // remove acentos
+}
+function findColumn(headers, candidates){
+  const normed = headers.map(normHeader);
+  for(const cand of candidates){
+    const nc = normHeader(cand);
+    const idx = normed.indexOf(nc);
+    if(idx !== -1) return headers[idx];
+  }
+  for(const cand of candidates){
+    const nc = normHeader(cand);
+    const idx = normed.findIndex(h => h.includes(nc) || nc.includes(h));
+    if(idx !== -1) return headers[idx];
+  }
+  return null;
+}
+
+/* ===================== CSV PARSE ===================== */
+function parseCSV(text){
+  const rows = []; let row=[], field='', inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(inQ){
+      if(c==='"' && n==='"'){ field+='"'; i++; }
+      else if(c==='"'){ inQ=false; }
+      else field+=c;
+    } else {
+      if(c==='"') inQ=true;
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\r'){}
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=c;
+    }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length>1 || (r.length===1 && r[0]!==''));
+}
+
+function parseDateFlex(v){
+  if(!v) return null;
+  const s = String(v).trim();
+  if(!s) return null;
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m) return new Date(`${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}T00:00:00`);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function parseValueFlex(v){
+  if(v===null||v===undefined) return null;
+  const s = String(v).trim();
+  if(!s) return null;
+  const cleaned = s.replace(/[R$\s]/g,'').replace(/\./g,'').replace(',', '.');
+  const n = Number(cleaned);
+  return isNaN(n) ? null : n;
+}
+
+function csvToClients(csvText){
+  const rows = parseCSV(csvText);
+  if(!rows.length) throw new Error('Planilha vazia');
+  const headers = rows[0].map(h => h.trim());
+  const col = {
+    date: findColumn(headers, FIELD_CANDIDATES.date),
+    name: findColumn(headers, FIELD_CANDIDATES.name),
+    cnpj: findColumn(headers, FIELD_CANDIDATES.cnpj),
+    responsible: findColumn(headers, FIELD_CANDIDATES.responsible),
+    value: findColumn(headers, FIELD_CANDIDATES.value),
+    plan: findColumn(headers, FIELD_CANDIDATES.plan),
+  };
+  if(!col.name){
+    throw Object.assign(new Error('Não encontrei uma coluna de nome de cliente.'), { headers });
+  }
+  const idx = {};
+  Object.keys(col).forEach(k => { idx[k] = col[k] ? headers.indexOf(col[k]) : -1; });
+
+  const clients = rows.slice(1)
+    .filter(r => r[idx.name] && r[idx.name].trim())
+    .map(r => ({
+      name: (r[idx.name]||'').trim(),
+      cnpj: idx.cnpj !== -1 ? (r[idx.cnpj]||'').trim() : '',
+      responsible: idx.responsible !== -1 ? (r[idx.responsible]||'').trim() : '',
+      plan: idx.plan !== -1 ? (r[idx.plan]||'').trim() : '',
+      date: idx.date !== -1 ? parseDateFlex(r[idx.date]) : null,
+      value: idx.value !== -1 ? parseValueFlex(r[idx.value]) : null,
+    }));
+
+  return { clients, headers, col };
+}
+
+const cnpjFmt = c => c && c.replace(/\D/g,'').length===14
+  ? c.replace(/\D/g,'').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+  : (c || '');
+
+const fmtBRL = n => n===null||n===undefined||isNaN(n) ? '—' : "R$\u00A0" + Math.round(n).toLocaleString('pt-BR');
+
+function monthStart(d){ const x=new Date(d.getFullYear(), d.getMonth(), 1); return x; }
+function isSameMonth(d, ref){ return d && d.getFullYear()===ref.getFullYear() && d.getMonth()===ref.getMonth(); }
+
+/* ===================== RANKING POR RESPONSÁVEL ===================== */
+function renderRanking(items){
+  const el = document.getElementById('rankingList');
+  const withResp = items.filter(c => c.responsible);
+  if(!withResp.length){
+    el.innerHTML = `<div class="empty-note">Sem coluna de responsável identificada nesta planilha.</div>`;
+    return;
+  }
+  const counts = new Map();
+  withResp.forEach(c => counts.set(c.responsible, (counts.get(c.responsible)||0) + 1));
+  const list = [...counts.entries()].sort((a,b) => b[1]-a[1]);
+  const max = Math.max(1, ...list.map(([,n]) => n));
+  el.innerHTML = list.map(([name, n]) => `
+    <div class="rank-row">
+      <div class="rank-label">${name}</div>
+      <div class="rank-track"><div class="rank-fill" style="width:${(n/max*100)}%"></div></div>
+      <div class="rank-val">${n}</div>
+    </div>`).join('');
+}
+
+/* ===================== SPOTLIGHT ROTATIVO ===================== */
+let spotlightItems = [];
+let spotlightIdx = 0;
+let spotlightTimer = null;
+
+function renderSpotlight(){
+  const el = document.getElementById('clientSpotlight');
+  const total = Math.max(1, spotlightItems.length);
+  if(!spotlightItems.length){
+    el.innerHTML = `<div class="empty-note">Nenhum novo contrato encontrado neste período.</div>`;
+    document.getElementById('rotCounter').textContent = '';
+  } else {
+    if(spotlightIdx >= total) spotlightIdx = 0;
+    const c = spotlightItems[spotlightIdx];
+    el.innerHTML = `
+      <div class="client-spotlight">
+        <div class="cs-top">
+          <span class="cs-badge">Novo contrato</span>
+        </div>
+        <div class="cs-name">${c.name}</div>
+        <div class="cs-sub">${[cnpjFmt(c.cnpj), c.plan].filter(Boolean).join(' · ') || '—'}</div>
+        <div class="cs-meta">
+          <div class="cs-meta-item">
+            <span class="k">Fechado em</span>
+            <span class="v">${c.date ? c.date.toLocaleDateString('pt-BR') : '—'}</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="k">Responsável</span>
+            <span class="v">${c.responsible || '—'}</span>
+          </div>
+          ${c.value!==null ? `
+          <div class="cs-meta-item">
+            <span class="k">Valor</span>
+            <span class="v pink">${fmtBRL(c.value)}</span>
+          </div>` : ''}
+        </div>
+      </div>`;
+    document.getElementById('rotCounter').textContent = `${String(spotlightIdx+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+  }
+  const bar = document.getElementById('rotBar');
+  bar.classList.remove('animate'); bar.style.width = '0%';
+  void bar.offsetWidth;
+  if(spotlightItems.length > 1){
+    bar.style.transitionDuration = SPOTLIGHT_ROTATE_MS + 'ms';
+    bar.classList.add('animate');
+    requestAnimationFrame(() => { bar.style.width = '100%'; });
+  }
+}
+function startSpotlightRotation(){
+  if(spotlightTimer) clearInterval(spotlightTimer);
+  spotlightTimer = setInterval(() => {
+    if(spotlightItems.length <= 1) return;
+    spotlightIdx = (spotlightIdx + 1) % spotlightItems.length;
+    renderSpotlight();
+  }, SPOTLIGHT_ROTATE_MS);
+}
+
+/* ===================== KPIs ===================== */
+const MONTH_NAMES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+
+function renderKPIs(monthClients){
+  const count = monthClients.length;
+  const withValue = monthClients.filter(c => c.value!==null && !isNaN(c.value));
+  const total = withValue.reduce((a,c) => a + c.value, 0);
+  const avg = withValue.length ? total / withValue.length : null;
+
+  document.getElementById('kpiCount').textContent = count;
+  document.getElementById('kpiValue').textContent = withValue.length ? fmtBRL(total) : '—';
+  document.getElementById('kpiAvg').textContent = avg!==null ? fmtBRL(avg) : '—';
+
+  const now = new Date();
+  document.getElementById('monthLabel').textContent = `em ${MONTH_NAMES[now.getMonth()]}`;
+}
+
+/* ===================== DIAGNÓSTICO ===================== */
+function showDiag(show, msg){
+  const box = document.getElementById('diag');
+  box.classList.toggle('show', !!show);
+  if(show) box.textContent = msg;
+}
+
+/* ===================== RENDER PRINCIPAL ===================== */
+function refreshDashboard(parsed){
+  const { clients } = parsed;
+  const now = new Date();
+  const clientsWithDate = clients.filter(c => c.date);
+  // Se conseguimos identificar datas, filtra pelo mês corrente.
+  // Caso contrário (coluna de data não encontrada), mostra tudo que veio na aba.
+  const monthClients = clientsWithDate.length
+    ? clients.filter(c => isSameMonth(c.date, now))
+    : clients;
+
+  renderKPIs(monthClients);
+  renderRanking(monthClients);
+
+  spotlightItems = [...monthClients].sort((a,b) => {
+    if(a.date && b.date) return b.date - a.date;
+    return 0;
+  });
+  spotlightIdx = 0;
+  renderSpotlight();
+  startSpotlightRotation();
+}
+
+/* ===================== CLOCK ===================== */
+function tickClock(){
+  document.getElementById('clockTime').textContent = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+}
+tickClock();
+setInterval(tickClock, 15000);
+
+/* ===================== LIVE SYNC ===================== */
+async function fetchLive(){
+  let lastErr = null;
+  for(const tabName of SHEET_TAB_CANDIDATES){
+    try{
+      const res = await fetch(GVIZ_URL(tabName), { cache:'no-store' });
+      if(!res.ok) throw new Error('HTTP ' + res.status + ' (aba "' + tabName + '")');
+      const text = await res.text();
+      const parsed = csvToClients(text);
+      if(!parsed.clients.length) throw new Error('vazio (aba "' + tabName + '")');
+      refreshDashboard(parsed);
+      showDiag(false);
+      console.log(`[sync:ok] aba "${tabName}" · colunas detectadas:`, parsed.col);
+      return;
+    } catch(err){
+      lastErr = err;
+    }
+  }
+  console.error('Falha ao sincronizar com a planilha (Novos Clientes):', lastErr);
+  const headerHint = lastErr && lastErr.headers ? ` Cabeçalhos encontrados: ${lastErr.headers.join(', ')}` : '';
+  showDiag(true, `Não foi possível carregar a aba "Novos Clientes": ${lastErr && lastErr.message ? lastErr.message : 'erro desconhecido'}.${headerHint}`);
+  document.getElementById('clientSpotlight').innerHTML = `<div class="empty-note">Aguardando dados da planilha…</div>`;
+}
+
+fetchLive();
+setInterval(fetchLive, AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
