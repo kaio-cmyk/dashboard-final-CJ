@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Conta Junto — Dashboard TV (v24)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#f8fafc; 
+      --stroke:rgba(15,23,42,.08);
+      --text:#0f172a; 
+      --muted:#64748b;
+      --blue:#2563eb; 
+      --green:#16a34a; 
+      --red:#dc2626; 
+      --amber:#d97706; 
+      --shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+      --card-bg: #ffffff;
+      --r20:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,sans-serif;
+      background: #f1f5f9;
+      color:var(--text);
+      overflow:hidden;
+    }
+    
+    .wrap{
+      height:100%; padding:14px; 
+      display:grid; 
+      grid-template-rows:56px 1fr 20px; 
+      gap:14px;
+    }
+
+    header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 20px;
+      background:var(--card-bg);
+      border:1px solid var(--stroke); border-radius:var(--r20); box-shadow:var(--shadow);
+    }
+    .brand{display:flex; gap:10px; align-items:center;}
+    .logo{
+      width:32px; height:32px; border-radius:8px;
+      background: linear-gradient(135deg, var(--blue), #3b82f6);
+      position:relative; overflow:hidden;
+    }
+    .brand h1{margin:0; font-size:18px; letter-spacing:-.01em; color:#1e293b;}
+    .brand .sub{margin:0 0 0; font-size:11px; color:var(--muted); font-weight:500;}
+    
+    .rightHeader{display:flex; align-items:center; gap:10px;}
+    .pill{
+      display:flex; align-items:center; gap:6px;
+      padding:5px 12px; border-radius:6px;
+      background:#f1f5f9; border:1px solid var(--stroke);
+      font-weight:600; font-size:12px; color:#334155;
+    }
+    .dot{width:6px;height:6px;border-radius:50%;}
+    .dot.ok{background:var(--green); box-shadow:0 0 0 2px rgba(22,163,74,.15);}
+    .dot.bad{background:var(--red); box-shadow:0 0 0 2px rgba(220,38,38,.15);}
+
+    main{
+      display:grid; 
+      grid-template-columns: 1fr 650px; 
+      gap:18px; 
+      min-height:0;
+    }
+
+    .panel{
+      display:flex; flex-direction:column;
+      background: transparent; border: none; padding:0;
+      min-height:0; overflow:hidden;
+    }
+
+    .sectionHeader{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:8px; padding:0 2px;
+    }
+    .sectionHeader h2{
+      margin:0; font-size:14px; font-weight:700; color:#334155; display:flex; align-items:center; gap:6px;
+    }
+    .badge{
+      font-size:10px; font-weight:600; padding:3px 8px; border-radius:4px;
+      background:#e2e8f0; color:#475569;
+    }
+
+    .deptGrid{
+      display:grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      grid-template-rows: repeat(2, 1fr); 
+      gap:14px; 
+      height:100%; min-height:0;
+    }
+    
+    .deptCard{
+      background:var(--card-bg);
+      border:1px solid var(--stroke);
+      border-radius:14px; 
+      box-shadow:var(--shadow);
+      padding:12px; 
+      display:flex; flex-direction:column; justify-content:space-between;
+      position:relative; overflow:hidden;
+    }
+
+    @keyframes bgPulse {
+      0% { background-color: #fff; border-color: rgba(220,38,38,0.3); }
+      50% { background-color: #fef2f2; border-color: rgba(220,38,38,1); }
+      100% { background-color: #fff; border-color: rgba(220,38,38,0.3); }
+    }
+    @keyframes textFlash { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+    .deptCard.alert {
+      animation: bgPulse 2s infinite ease-in-out;
+      box-shadow: 0 2px 12px rgba(220,38,38,0.15);
+    }
+    .alertBadge {
+      position:absolute; top:8px; right:8px;
+      background:var(--red); color:#fff;
+      font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em;
+      padding:4px 8px; border-radius:4px;
+      box-shadow: 0 2px 6px rgba(220,38,38,0.3);
+      display:none; 
+      animation: textFlash 1.5s infinite;
+      z-index: 10;
+    }
+    .deptCard.alert .alertBadge { display:block; }
+    .deptCard.alert .deptTitle { color:var(--red); }
+
+    .deptTitle{
+      font-size:15px; 
+      font-weight:800; 
+      text-transform: uppercase; color: #334155;
+      margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      padding-right: 70px; 
+    }
+
+    .chartWrap{
+      flex:1; position:relative; width:100%; min-height:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .chartWrap canvas{max-height:72% !important; max-width:80%;}
+
+    .chartOverlay{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none;
+    }
+    .chartPct{
+      font-size:35px; 
+      font-weight:800; color:var(--text); letter-spacing:-.03em; line-height:1;
+    }
+    .chartLabel{font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; margin-top:2px;}
+
+    .deptFooter{
+      display:grid; grid-template-columns:1fr 1fr 1fr; 
+      gap:4px; padding-top:8px; margin-top:4px;
+      border-top:1px solid #f1f5f9;
+    }
+    .statItem{display:flex; flex-direction:column; align-items:center; justify-content:center;}
+    .statVal{
+      font-size:18px; 
+      font-weight:800; line-height:1; color:#334155;
+    }
+    .statLabel{font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; margin-top:2px;}
+    
+    .c-green{color:var(--green) !important} 
+    .c-blue{color:var(--blue) !important} 
+    .c-red{color:var(--red) !important}
+
+    .sidebarContent{
+      display:flex; flex-direction:column; gap:14px;
+      height:100%; overflow-y:auto; padding-right:2px;
+    }
+
+    .sideCard{
+      background:var(--card-bg); border:1px solid var(--stroke); border-radius:14px;
+      padding:12px; box-shadow:var(--shadow);
+    }
+
+    .kpis{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    .kpi{
+      background:#f8fafc; border:1px solid var(--stroke); border-radius:10px;
+      padding:8px 12px; display:flex; flex-direction:column; justify-content:center;
+    }
+    .kpi .label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+    .kpi .value{font-size:22px;font-weight:800;letter-spacing:-.02em; margin-top:1px; color:#1e293b;}
+    .kpi .hint{font-size:10px;color:#94a3b8;font-weight:500;}
+    
+    .kpi.accent{background:linear-gradient(135deg, rgba(37,99,235,.05), rgba(37,99,235,.1)); border-color:rgba(37,99,235,.2);}
+    .kpi.green .value{color:var(--green)} .kpi.red .value{color:var(--red)}
+    .kpi.blue .value{color:var(--blue)} .kpi.amber .value{color:var(--amber)}
+
+    .miniKpis{
+      display:flex; flex-direction:column; gap:8px; 
+    }
+    .mini{
+      background:#f8fafc; border:1px solid var(--stroke); border-radius:10px;
+      padding:12px 16px;
+      display:flex; align-items:center; justify-content:space-between; 
+    }
+    .mini .t{
+      font-size:14px; 
+      color:#334155; font-weight:800; text-transform:uppercase;
+    }
+    .mini .s{
+      font-size:12px; 
+      color:#64748b; font-weight:600;
+    }
+    .mini .v{
+      font-size:32px; 
+      font-weight:800; color:#0f172a; letter-spacing:-0.03em;
+    }
+
+    .jars{
+      display:flex; flex-direction:column; gap:18px; flex: 1; justify-content: center;
+    }
+    .jarCard{
+      background:#fff; border:1px solid var(--stroke); border-radius:16px; 
+      padding:24px;
+      display:grid; grid-template-columns:120px 1fr; 
+      gap:24px; align-items:center; height: 100%;
+    }
+    .jar{
+      width:100%; height:180px; 
+      border-radius:12px 12px 18px 18px;
+      border:2px solid rgba(15,23,42,.1);
+      background:linear-gradient(180deg, #f1f5f9, #e2e8f0);
+      position:relative; overflow:hidden;
+    }
+    .fill{position:absolute;left:0;right:0;bottom:0;height:50%;background:linear-gradient(180deg, var(--blue), #60a5fa);}
+    .fill.red{background:linear-gradient(180deg, var(--red), #f87171);}
+    .fill.green{background:linear-gradient(180deg, var(--green), #4ade80);}
+    
+    .jarMeta{
+      position:absolute;inset:0;
+      background:linear-gradient(90deg, rgba(255,255,255,.0), rgba(255,255,255,.55), rgba(255,255,255,.0));
+      transform: translateX(-80px) skewX(-12deg);
+      animation: glass 5.5s ease-in-out infinite; opacity:.5; pointer-events:none;
+    }
+    @keyframes glass{0%{transform: translateX(-100px) skewX(-12deg)}50%{transform: translateX(100px) skewX(-12deg)}100%{transform: translateX(200px) skewX(-12deg)}}
+
+    .jarTxt .name{
+      font-size:28px; 
+      font-weight:900; color:#334155; margin-bottom:8px; text-transform: uppercase;
+    }
+    .jarTxt .nums{
+      font-size:20px; 
+      color:#64748b; font-weight:500; line-height:1.5;
+    }
+    .jarTxt b {color:#0f172a; font-weight:800;}
+
+    footer{display:flex; justify-content:space-between; align-items:center; padding:0 8px; color:#94a3b8; font-size:11px; font-weight:600;}
+
+    .diag{
+      position:absolute; left:20px; right:20px; bottom:60px; display:none;
+      padding:12px; border-radius:10px; border:1px solid #fca5a5;
+      background:#fef2f2; color:#991b1b; box-shadow:var(--shadow); z-index:999;
+    }
+    .diag.show{display:block}
+    .diag code{display:block; margin-top:6px; font-family:monospace; background:rgba(0,0,0,0.05); padding:6px; border-radius:4px; font-size:11px;}
+
+    /* =============================================
+       EFEITOS DE CELEBRAÇÃO
+    ============================================= */
+
+    /* Canvas de confete/fogos (fica atrás dos overlays) */
+    #celebrationCanvas {
+      position:fixed; inset:0; pointer-events:none;
+      z-index:9000;
+    }
+
+    /* OVERLAY: Chuva de dinheiro (escudo operacional) */
+    #moneyOverlay {
+      position:fixed; inset:0;
+      background: radial-gradient(ellipse at center, rgba(16,185,80,0.18) 0%, rgba(0,0,0,0.82) 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      z-index:9100; pointer-events:none;
+      opacity:0; transition: opacity 0.4s;
+    }
+    #moneyOverlay.active { opacity:1; }
+    #moneyOverlay .mainEmoji {
+      font-size:220px; line-height:1;
+      filter: drop-shadow(0 0 60px rgba(22,163,74,0.9)) drop-shadow(0 0 120px rgba(22,163,74,0.5));
+      animation: moneyBounce 0.6s ease-in-out infinite alternate;
+    }
+    @keyframes moneyBounce {
+      from { transform: scale(1) rotate(-8deg); }
+      to   { transform: scale(1.08) rotate(8deg); }
+    }
+    #moneyOverlay .moneyMsg {
+      margin-top:24px;
+      font-size:52px; font-weight:900; letter-spacing:-0.02em;
+      color:#fff;
+      text-shadow: 0 0 40px rgba(22,163,74,1), 0 4px 16px rgba(0,0,0,0.5);
+      animation: textPop 0.5s ease-out;
+    }
+    #moneyOverlay .moneyValue {
+      margin-top:10px;
+      font-size:38px; font-weight:800;
+      color:#4ade80;
+      text-shadow: 0 0 30px rgba(74,222,128,0.8);
+    }
+    @keyframes textPop {
+      from { transform: scale(0.5); opacity:0; }
+      to   { transform: scale(1); opacity:1; }
+    }
+
+    /* Notas flutuantes de dinheiro */
+    .floatingMoney {
+      position:fixed; pointer-events:none; z-index:9050;
+      font-size:var(--sz, 60px);
+      animation: floatMoney var(--dur, 3s) ease-in forwards;
+      left: var(--x, 50%); top: var(--y, 110%);
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    }
+    @keyframes floatMoney {
+      0%   { transform: translateY(0) rotate(var(--r0, 0deg)) scale(0.6); opacity:0; }
+      15%  { opacity:1; }
+      80%  { opacity:1; }
+      100% { transform: translateY(-110vh) rotate(var(--r1, 30deg)) scale(1.1); opacity:0; }
+    }
+
+    /* OVERLAY: Fogos + Novo Cliente */
+    #contractOverlay {
+      position:fixed; inset:0;
+      background: radial-gradient(ellipse at center, rgba(37,99,235,0.15) 0%, rgba(0,0,0,0.85) 100%);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      z-index:9100; pointer-events:none;
+      opacity:0; transition: opacity 0.4s;
+    }
+    #contractOverlay.active { opacity:1; }
+    #contractOverlay .clientEmoji {
+      font-size:180px; line-height:1;
+      animation: clientEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      filter: drop-shadow(0 0 50px rgba(250,204,21,0.8));
+    }
+    @keyframes clientEnter {
+      from { transform: translateY(80px) scale(0.3); opacity:0; }
+      to   { transform: translateY(0) scale(1); opacity:1; }
+    }
+    #contractOverlay .contractMsg {
+      margin-top:20px;
+      font-size:56px; font-weight:900; letter-spacing:-0.02em;
+      color:#fff;
+      text-shadow: 0 0 40px rgba(250,204,21,0.9), 0 4px 16px rgba(0,0,0,0.5);
+      animation: textPop 0.5s ease-out 0.3s both;
+    }
+    #contractOverlay .contractSub {
+      margin-top:10px;
+      font-size:32px; font-weight:700;
+      color:#fde68a;
+      text-shadow: 0 0 20px rgba(253,230,138,0.6);
+      animation: textPop 0.5s ease-out 0.5s both;
+    }
+
+    /* Estrelinhas voando */
+    .fireworkStar {
+      position:fixed; pointer-events:none; z-index:9050;
+      width: var(--sz,10px); height: var(--sz,10px);
+      border-radius:50%;
+      background: var(--col, #fbbf24);
+      box-shadow: 0 0 6px 2px var(--col, #fbbf24);
+      animation: starFly var(--dur,1.2s) ease-out forwards;
+      left: var(--x,50%); top: var(--y,50%);
+    }
+    @keyframes starFly {
+      0%   { transform: translate(0,0) scale(1); opacity:1; }
+      100% { transform: translate(var(--tx,0px), var(--ty,0px)) scale(0.2); opacity:0; }
+    }
+
+    @media (max-width: 1200px){
+      main{grid-template-columns: 1fr;} 
+      .kpis{grid-template-columns: repeat(3, 1fr);}
+      .deptGrid{grid-template-rows: auto; grid-auto-rows: 240px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Conta Junto</h1>
+          <div class="sub">Painel Operacional</div>
+        </div>
+      </div>
+      <div class="rightHeader">
+        <div class="pill">🕒 <span id="clock">--:--:--</span></div>
+        <div class="pill"><span class="dot" id="loadDot"></span><span id="loadLabel">Carregando...</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="sectionHeader">
+          <h2>📊 Status de Tarefas</h2>
+          <span class="badge">Top 6 Depts</span>
+        </div>
+        <div class="deptGrid" id="deptGrid"></div>
+      </section>
+
+      <section class="sidebarContent">
+        <div class="sideCard">
+          <div class="sectionHeader"><h2>📌 Visão Geral</h2></div>
+          <div class="kpis">
+            <div class="kpi accent"><div class="label">Total</div><div class="value" id="k_total">—</div></div>
+            <div class="kpi blue"><div class="label">Abertas</div><div class="value" id="k_open">—</div></div>
+            <div class="kpi green"><div class="label">Concluídas</div><div class="value" id="k_done">—</div></div>
+            <div class="kpi red"><div class="label">Em atraso</div><div class="value" id="k_late">—</div></div>
+            <div class="kpi amber"><div class="label">Vencem hoje</div><div class="value" id="k_today">—</div></div>
+            <div class="kpi"><div class="label">Próx. 7 dias</div><div class="value" id="k_next7">—</div></div>
+          </div>
+        </div>
+
+        <div class="sideCard">
+          <div class="sectionHeader"><h2>📈 Acompanhamento</h2></div>
+          <div class="miniKpis" id="metaContainer"></div>
+        </div>
+
+        <div class="sideCard" style="flex:1; display:flex; flex-direction:column;">
+          <div class="sectionHeader"><h2>🏺 Potes de Resultado</h2></div>
+          <div class="jars" id="jars"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>Fonte: Google Sheets • <span id="sourceInfo">—</span></div>
+      <div>Atualizado em <span id="updatedAt">—</span></div>
+    </footer>
+  </div>
+
+  <!-- Overlays de celebração -->
+  <canvas id="celebrationCanvas"></canvas>
+
+  <div id="moneyOverlay">
+    <div class="mainEmoji">💰</div>
+    <div class="moneyMsg">escudo operacional CRESCEU!</div>
+    <div class="moneyValue" id="moneyDeltaLabel"></div>
+  </div>
+
+  <div id="contractOverlay">
+    <div class="clientEmoji">🤝</div>
+    <div class="contractMsg">NOVO CONTRATO!</div>
+    <div class="contractSub" id="contractCountLabel"></div>
+  </div>
+
+  <div class="diag" id="diag">
+    <h3>⚠️ Falha de Conexão</h3>
+    <p id="diagMsg">—</p>
+    <code id="diagUrl">—</code>
+  </div>
+
+<script>
+/* =============================================
+   CONFIGURAÇÕES
+============================================= */
+const SHEET_ID = "16tFONc6OM2Z0I1q89jpPet9ulcgqOblsvGteaZHn8TY";
+const TASK_SHEETS = ["tarefas","Tarefas"];
+const META_SHEETS = ["Metas e Acompanhamento","Metas","Metas e acompanhamento"];
+const REFRESH_MS = 60 * 1000;
+
+/* =============================================
+   ESTADO DE CELEBRAÇÃO
+============================================= */
+// Armazena valores anteriores para comparar nas próximas atualizações
+const _prevState = {
+  guardiaoRemaining: null,   // Valor remanescente do escudo operacional
+  contractsQty: null         // Número de contratos fechados
+};
+
+/* =============================================
+   UTILITÁRIOS
+============================================= */
+const el = (id) => document.getElementById(id);
+
+function setState(state, label){
+  const dot = el("loadDot");
+  dot.classList.remove("ok","bad");
+  if(state==="ok") dot.classList.add("ok");
+  if(state==="bad") dot.classList.add("bad");
+  el("loadLabel").textContent = label;
+}
+
+function showDiag(show, msg="", url=""){
+  const box = el("diag");
+  box.classList.toggle("show", !!show);
+  if(show){ el("diagMsg").textContent = msg||"—"; el("diagUrl").textContent = url||"—"; }
+}
+
+function brDate(d){
+  if(!(d instanceof Date)||isNaN(d)) return "—";
+  return `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
+}
+function brTime(d){
+  if(!(d instanceof Date)||isNaN(d)) return "—";
+  return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+function todayStart(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+
+function parseDate(x){
+  if(x===null||x===undefined) return null;
+  if(x instanceof Date&&!isNaN(x)){ const d=new Date(x); d.setHours(0,0,0,0); return d; }
+  const s=String(x).trim(); if(!s) return null;
+  let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m) return new Date(`${m[3]}-${String(m[2]).padStart(2,"0")}-${String(m[1]).padStart(2,"0")}T00:00:00`);
+  const d=new Date(s); return isNaN(d)?null:d;
+}
+
+function toNumber(x){
+  if(x===null||x===undefined) return NaN;
+  const s=String(x).trim(); if(!s) return NaN;
+  const cleaned=s.replace(/[R$\s]/g,"").replace(/\./g,"").replace(",",".");
+  const n=Number(cleaned); return isNaN(n)?NaN:n;
+}
+
+function formatBRL(v){
+  const n=Number(v); if(!isFinite(n)) return "—";
+  return n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+}
+
+/* =============================================
+   ÁUDIO
+============================================= */
+let _audioCtx = null;
+function getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+function playCashSound(){
+  try {
+    const ctx = getAudioCtx();
+    const now = ctx.currentTime;
+    // Toque de caixa registradora: "ding!" agudo + ruído de moedas
+    const playCoin = (t, freq, dur) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, t + dur);
+      gain.gain.setValueAtTime(0.4, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur);
+    };
+    // Acorde de moedas caindo
+    playCoin(now,       1200, 0.3);
+    playCoin(now+0.05,  980,  0.35);
+    playCoin(now+0.10,  1450, 0.25);
+    playCoin(now+0.18,  800,  0.4);
+    playCoin(now+0.25,  1100, 0.3);
+    playCoin(now+0.35,  1600, 0.2);
+    // "Ding!" de caixa registradora
+    const bell = ctx.createOscillator();
+    const bellGain = ctx.createGain();
+    bell.connect(bellGain); bellGain.connect(ctx.destination);
+    bell.type = "triangle";
+    bell.frequency.setValueAtTime(2000, now+0.4);
+    bell.frequency.exponentialRampToValueAtTime(1800, now+1.2);
+    bellGain.gain.setValueAtTime(0, now+0.4);
+    bellGain.gain.linearRampToValueAtTime(0.5, now+0.42);
+    bellGain.gain.exponentialRampToValueAtTime(0.001, now+1.2);
+    bell.start(now+0.4); bell.stop(now+1.3);
+  } catch(e){ console.warn("Audio error:", e); }
+}
+
+function playFireworkSound(){
+  try {
+    const ctx = getAudioCtx();
+    const playBurst = (t) => {
+      // Explosão de fogos
+      const bufSize = ctx.sampleRate * 0.4;
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for(let i=0; i<bufSize; i++) data[i] = (Math.random()*2-1) * Math.pow(1 - i/bufSize, 1.5);
+      const noise = ctx.createBufferSource();
+      noise.buffer = buf;
+      const bandpass = ctx.createBiquadFilter();
+      bandpass.type = "bandpass";
+      bandpass.frequency.value = 600 + Math.random()*800;
+      bandpass.Q.value = 0.5;
+      const gainN = ctx.createGain();
+      gainN.gain.setValueAtTime(0.6, t);
+      gainN.gain.exponentialRampToValueAtTime(0.001, t+0.4);
+      noise.connect(bandpass); bandpass.connect(gainN); gainN.connect(ctx.destination);
+      noise.start(t); noise.stop(t+0.4);
+      // Whistle (subindo)
+      const whistle = ctx.createOscillator();
+      const wGain = ctx.createGain();
+      whistle.connect(wGain); wGain.connect(ctx.destination);
+      whistle.type = "sine";
+      whistle.frequency.setValueAtTime(300, t-0.3);
+      whistle.frequency.exponentialRampToValueAtTime(1800, t);
+      wGain.gain.setValueAtTime(0.15, t-0.3);
+      wGain.gain.exponentialRampToValueAtTime(0.001, t);
+      whistle.start(t-0.3); whistle.stop(t);
+    };
+    const now = ctx.currentTime;
+    playBurst(now+0.3);
+    playBurst(now+0.7);
+    playBurst(now+1.1);
+    playBurst(now+1.5);
+    playBurst(now+1.9);
+  } catch(e){ console.warn("Audio error:", e); }
+}
+
+/* =============================================
+   PARTÍCULAS / ANIMAÇÕES
+============================================= */
+
+// Notas flutuando da base para cima
+function spawnFloatingMoney(count = 20){
+  const emojis = ["💵","💶","💷","💴","💰","🪙","💸"];
+  for(let i=0; i<count; i++){
+    setTimeout(() => {
+      const note = document.createElement("div");
+      note.className = "floatingMoney";
+      const sz = 40 + Math.random() * 60;
+      note.style.cssText = `
+        --sz:${sz}px;
+        --x:${Math.random()*100}vw;
+        --y:${90 + Math.random()*20}vh;
+        --r0:${(Math.random()-0.5)*60}deg;
+        --r1:${(Math.random()-0.5)*90}deg;
+        --dur:${2.5 + Math.random()*2}s;
+      `;
+      note.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      document.body.appendChild(note);
+      setTimeout(() => note.remove(), 5000);
+    }, i * 80);
+  }
+}
+
+// Estrelinhas de fogos de artifício
+const cvs = el("celebrationCanvas");
+const ctx2d = cvs.getContext("2d");
+let _fireworkParticles = [];
+let _fireworkRAF = null;
+
+function resizeCanvas(){
+  cvs.width = window.innerWidth;
+  cvs.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+function launchFirework(x, y){
+  const colors = ["#fbbf24","#f87171","#60a5fa","#4ade80","#c084fc","#fb923c","#fff","#f472b6"];
+  const count = 80 + Math.floor(Math.random()*40);
+  for(let i=0; i<count; i++){
+    const angle = (Math.PI*2/count) * i + (Math.random()-0.5)*0.3;
+    const speed = 3 + Math.random() * 7;
+    _fireworkParticles.push({
+      x, y,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed,
+      life: 1,
+      decay: 0.012 + Math.random()*0.018,
+      size: 3 + Math.random()*4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      trail: []
+    });
+  }
+}
+
+function launchMultipleFireworks(duration=5000){
+  const interval = setInterval(() => {
+    const x = 0.1*window.innerWidth + Math.random()*0.8*window.innerWidth;
+    const y = 0.1*window.innerHeight + Math.random()*0.5*window.innerHeight;
+    launchFirework(x, y);
+  }, 300);
+  setTimeout(() => clearInterval(interval), duration);
+}
+
+function animateFireworks(){
+  ctx2d.clearRect(0, 0, cvs.width, cvs.height);
+  _fireworkParticles = _fireworkParticles.filter(p => p.life > 0.02);
+  for(const p of _fireworkParticles){
+    p.trail.push({x:p.x, y:p.y, life:p.life});
+    if(p.trail.length > 6) p.trail.shift();
+    // Trail
+    for(let t=0; t<p.trail.length; t++){
+      const pt = p.trail[t];
+      ctx2d.beginPath();
+      ctx2d.arc(pt.x, pt.y, p.size*(t/p.trail.length)*0.6, 0, Math.PI*2);
+      ctx2d.fillStyle = p.color;
+      ctx2d.globalAlpha = pt.life * (t/p.trail.length) * 0.4;
+      ctx2d.fill();
+    }
+    // Particle
+    ctx2d.beginPath();
+    ctx2d.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx2d.fillStyle = p.color;
+    ctx2d.globalAlpha = p.life;
+    ctx2d.fill();
+    ctx2d.globalAlpha = 1;
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.12; // gravidade
+    p.vx *= 0.98;
+    p.life -= p.decay;
+    p.size *= 0.995;
+  }
+  _fireworkRAF = requestAnimationFrame(animateFireworks);
+}
+animateFireworks(); // inicia loop vazio
+
+/* =============================================
+   TRIGGERS DE CELEBRAÇÃO
+============================================= */
+
+let _moneyTimeout = null;
+let _contractTimeout = null;
+
+function triggerMoneyEffect(delta, newVal){
+  // Som de caixa registradora
+  playCashSound();
+  // Label do delta
+  const sign = delta > 0 ? "+" : "";
+  el("moneyDeltaLabel").textContent = `${sign}${formatBRL(delta)} → ${formatBRL(newVal)}`;
+  // Overlay
+  const overlay = el("moneyOverlay");
+  overlay.classList.add("active");
+  // Notas voando
+  spawnFloatingMoney(30);
+  // Remove após 5s
+  clearTimeout(_moneyTimeout);
+  _moneyTimeout = setTimeout(() => {
+    overlay.classList.remove("active");
+  }, 6000);
+}
+
+function triggerContractEffect(newCount){
+  // Som de fogos
+  playFireworkSound();
+  // Label
+  el("contractCountLabel").textContent = `Total no período: ${newCount} contrato${newCount!==1?"s":""}`;
+  // Overlay
+  const overlay = el("contractOverlay");
+  overlay.classList.add("active");
+  // Fogos no canvas
+  launchMultipleFireworks(6000);
+  // Remove após 6s
+  clearTimeout(_contractTimeout);
+  _contractTimeout = setTimeout(() => {
+    overlay.classList.remove("active");
+  }, 7000);
+}
+
+/* =============================================
+   GOOGLE SHEETS / GVIZ
+============================================= */
+function gvizToObjects(table){
+  const headers = (table.cols||[]).map((c,i)=> (c.label||c.id||`col${i}`));
+  const rows = (table.rows||[]).map(r=>{
+    const obj={};
+    (r.c||[]).forEach((cell,i)=>{
+      const val = (cell&&(cell.f!==undefined&&cell.f!==null)?cell.f:(cell?.v??""));
+      obj[headers[i]] = val;
+      obj[`_col${i}`] = val;
+    });
+    return obj;
+  });
+  return rows;
+}
+
+async function loadGVizJSONP(sheetName){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=out:json`;
+  window.google = window.google||{};
+  window.google.visualization = window.google.visualization||{};
+  window.google.visualization.Query = window.google.visualization.Query||{};
+  const prev = window.google.visualization.Query.setResponse;
+  return await new Promise((resolve,reject)=>{
+    const s = document.createElement("script");
+    let done = false;
+    window.google.visualization.Query.setResponse = (res)=>{
+      if(done) return; done=true; cleanup();
+      try{
+        if(!res||!res.table) throw {kind:"parse",msg:"Resposta GViz inválida.",url};
+        resolve({sheet:sheetName,url,rows:gvizToObjects(res.table)});
+      }catch(e){ reject(e?.kind?e:{kind:"parse",msg:"Erro conversão GViz.",url}); }
+    };
+    function cleanup(){ if(s&&s.parentNode)s.parentNode.removeChild(s); if(prev)window.google.visualization.Query.setResponse=prev; }
+    s.src=url; s.async=true;
+    s.onerror=()=>{ if(done)return; done=true; cleanup(); reject({kind:"network",msg:"Falha rede script GViz.",url}); };
+    document.head.appendChild(s);
+    setTimeout(()=>{ if(done)return; done=true; cleanup(); reject({kind:"timeout",msg:"Timeout Google.",url}); },12000);
+  });
+}
+
+async function loadCSVFetch(sheetName){
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  const res = await fetch(url,{cache:"no-store",credentials:"omit"});
+  const text = await res.text();
+  if(!res.ok) throw {kind:"http",msg:`HTTP ${res.status}.`,url};
+  const out = Papa.parse(text,{header:true,skipEmptyLines:true});
+  const data = (out.data||[]).map(row=>{
+    const keys = out.meta.fields||Object.keys(row);
+    keys.forEach((k,i)=>{ row[`_col${i}`]=row[k]; });
+    return row;
+  });
+  return {sheet:sheetName,url,rows:data};
+}
+
+async function loadFirst(sheetCandidates){
+  let lastErr=null;
+  for(const name of sheetCandidates){ try{ return await loadGVizJSONP(name); }catch(e){ lastErr=e; } }
+  for(const name of sheetCandidates){ try{ return await loadCSVFetch(name); }catch(e){ lastErr=e; } }
+  throw lastErr;
+}
+
+/* =============================================
+   RENDERIZAÇÃO
+============================================= */
+const chartInstances = new Map();
+function clearDeptGrid(){
+  el("deptGrid").innerHTML="";
+  for(const ch of chartInstances.values()){ try{ ch.destroy(); }catch(e){} }
+  chartInstances.clear();
+}
+
+function buildDeptCard(parent, deptName){
+  const card=document.createElement("div"); card.className="deptCard";
+  const badge=document.createElement("div"); badge.className="alertBadge"; badge.innerHTML="⚠️ ATENÇÃO";
+  card.appendChild(badge);
+  const title=document.createElement("div"); title.className="deptTitle"; title.textContent=deptName;
+  const wrap=document.createElement("div"); wrap.className="chartWrap";
+  const canvas=document.createElement("canvas");
+  const overlay=document.createElement("div"); overlay.className="chartOverlay";
+  overlay.innerHTML=`<span class="chartPct" data-pct>0%</span><span class="chartLabel">Concluído</span>`;
+  wrap.appendChild(canvas); wrap.appendChild(overlay);
+  const footer=document.createElement("div"); footer.className="deptFooter";
+  footer.innerHTML=`
+    <div class="statItem"><span class="statVal c-green" data-done>0</span><span class="statLabel">Concl.</span></div>
+    <div class="statItem"><span class="statVal c-blue" data-open>0</span><span class="statLabel">Abertas</span></div>
+    <div class="statItem"><span class="statVal c-red" data-late>0</span><span class="statLabel">Atraso</span></div>
+  `;
+  card.appendChild(title); card.appendChild(wrap); card.appendChild(footer);
+  parent.appendChild(card);
+  return {canvas,footer,overlay,card};
+}
+
+function upsertDoughnut(canvas, key, counts){
+  const data=[counts.done, counts.late, counts.onTime, counts.noDue];
+  const colors=["#16a34a","#dc2626","#3b82f6","#cbd5e1"];
+  const prev=chartInstances.get(key);
+  if(prev){ prev.data.datasets[0].data=data; prev.update(); return; }
+  chartInstances.set(key, new Chart(canvas.getContext("2d"),{
+    type:"doughnut",
+    data:{datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:4,spacing:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:"75%",plugins:{legend:{display:false}}}
+  }));
+}
+
+function computeTaskMetrics(rows){
+  const t0=todayStart();
+  const t1=new Date(t0); t1.setDate(t1.getDate()+1);
+  const t7=new Date(t0); t7.setDate(t7.getDate()+7);
+  const norm=(s)=>String(s||"").trim();
+  const mapped=rows.map(r=>({
+    status:norm(r["Tarefa - Status"]),
+    dept:norm(r["Empresa - Departamento"])||"Sem departamento",
+    venc:parseDate(r["Tarefa - Data de Vencimento (completa)"]),
+  }));
+  const isDone=(x)=>["concluídas","concluidas"].includes(x.status.toLowerCase());
+  const isOpen=(x)=>["abertas","aberta"].includes(x.status.toLowerCase());
+  const total=mapped.length;
+  const done=mapped.filter(isDone).length;
+  const open=mapped.filter(isOpen).length;
+  const late=mapped.filter(x=>isOpen(x)&&x.venc&&x.venc<t0).length;
+  const today=mapped.filter(x=>isOpen(x)&&x.venc&&x.venc>=t0&&x.venc<t1).length;
+  const next7=mapped.filter(x=>isOpen(x)&&x.venc&&x.venc>=t0&&x.venc<t7).length;
+  const deptMap=new Map();
+  for(const x of mapped){
+    const key=x.dept;
+    if(!deptMap.has(key)) deptMap.set(key,{done:0,late:0,onTime:0,noDue:0,open:0});
+    const d=deptMap.get(key);
+    if(isDone(x)){d.done++;continue;}
+    if(isOpen(x)){d.open++;if(!x.venc){d.noDue++;continue;} if(x.venc<t0)d.late++;else d.onTime++;}
+  }
+  return {total,done,open,late,today,next7,deptMap};
+}
+
+function renderKPIs(m){
+  el("k_total").textContent=m.total.toLocaleString("pt-BR");
+  el("k_open").textContent=m.open.toLocaleString("pt-BR");
+  el("k_done").textContent=m.done.toLocaleString("pt-BR");
+  el("k_late").textContent=m.late.toLocaleString("pt-BR");
+  el("k_today").textContent=m.today.toLocaleString("pt-BR");
+  el("k_next7").textContent=m.next7.toLocaleString("pt-BR");
+}
+
+function renderDepartments(m){
+  clearDeptGrid();
+  const grid=el("deptGrid");
+  const list=[...m.deptMap.entries()].map(([dept,c])=>({dept,...c})).sort((a,b)=>(b.open-a.open)||(b.late-a.late));
+  for(const item of list.slice(0,6)){
+    const {canvas,footer,overlay,card}=buildDeptCard(grid,item.dept);
+    if(item.late>0) card.classList.add("alert");
+    footer.querySelector("[data-done]").textContent=item.done;
+    footer.querySelector("[data-open]").textContent=item.open;
+    footer.querySelector("[data-late]").textContent=item.late;
+    const totalDept=item.done+item.open;
+    const pct=totalDept>0?Math.round((item.done/totalDept)*100):0;
+    overlay.querySelector("[data-pct]").textContent=`${pct}%`;
+    upsertDoughnut(canvas,item.dept,item);
+  }
+}
+
+function parseMetaSheet(rows){
+  if(!rows||!rows.length) return null;
+  const r0=rows[0]||{};
+  const m1={title:r0["Comercial"]||"Contratos Fechados",qty:r0["_col1"]||"0",meta:r0["_col2"]||"0"};
+  const m2={title:r0["Atendimento/Sucesso do Cliente"]||"SLA",qty:r0["Qtd.1"],minutes:r0["Minutos"]};
+  const m3={title:r0["Legalização"]||"Legalização",qty:r0["_col9"]||"0"};
+  const jars=[];
+  for(const r of rows){
+    const name=(r["Potes de Resultado"]||"").toString().trim();
+    if(name.toLowerCase()==="escudo operacional"){
+      jars.push({
+        name,
+        initial:toNumber(r["Valor Inicial"]),
+        remaining:toNumber(r["Valor Remanescente"]),
+        fines:toNumber(r["Multas no Mês"])
+      });
+    }
+  }
+  return {m1,m2,m3,jars};
+}
+
+function checkCelebrations(meta){
+  if(!meta) return;
+
+  // --- escudo operacional: detectar aumento do valor remanescente ---
+  if(meta.jars.length > 0){
+    const newVal = meta.jars[0].remaining;
+    const prev = _prevState.guardiaoRemaining;
+    if(isFinite(newVal)){
+      if(prev !== null && isFinite(prev) && newVal > prev){
+        triggerMoneyEffect(newVal - prev, newVal);
+      }
+      _prevState.guardiaoRemaining = newVal;
+    }
+  }
+
+  // --- Contratos Fechados: detectar aumento do número ---
+  const newContracts = toNumber(meta.m1.qty);
+  const prevContracts = _prevState.contractsQty;
+  if(isFinite(newContracts)){
+    if(prevContracts !== null && isFinite(prevContracts) && newContracts > prevContracts){
+      triggerContractEffect(newContracts);
+    }
+    _prevState.contractsQty = newContracts;
+  }
+}
+
+function renderMeta(meta){
+  const container=el("metaContainer");
+  if(!meta){container.innerHTML="<div class='mini'>Sem dados</div>";return;}
+  const metas=[
+    {t:meta.m1.title,s:"Realizado / Meta",v:`${meta.m1.qty} / ${meta.m1.meta}`},
+    {t:meta.m2.title,s:meta.m2.qty?`Qtd: ${meta.m2.qty}`:"Atendimento",v:meta.m2.minutes||"—"},
+    {t:meta.m3.title,s:"CNPJs Abertos",v:(meta.m3.qty??"—")}
+  ];
+  container.innerHTML=metas.map(m=>`
+    <div class="mini">
+      <div class="metaGroup"><div class="t">${escapeHtml(m.t)}</div><div class="s">${escapeHtml(m.s)}</div></div>
+      <div class="v">${escapeHtml(m.v)}</div>
+    </div>
+  `).join("");
+
+  const wrap=el("jars"); wrap.innerHTML="";
+  if(!meta.jars.length){
+    wrap.innerHTML=`<div class="jarCard" style="color:#94a3b8">Aguardando escudo operacional...</div>`;
+    return;
+  }
+  const j=meta.jars[0];
+  const card=document.createElement("div"); card.className="jarCard";
+  const jar=document.createElement("div"); jar.className="jar";
+  const fill=document.createElement("div"); fill.className="fill";
+  const initial=isFinite(j.initial)?j.initial:NaN;
+  const remaining=isFinite(j.remaining)?j.remaining:NaN;
+  let pct=0;
+  if(initial>0) pct=Math.max(0,Math.min(1,remaining/initial));
+  fill.style.height=`${Math.round(pct*100)}%`;
+  if(pct>=0.7) fill.classList.add("green"); else if(pct<=0.35) fill.classList.add("red");
+  const glass=document.createElement("div"); glass.className="jarMeta";
+  jar.appendChild(fill); jar.appendChild(glass);
+  const txt=document.createElement("div"); txt.className="jarTxt";
+  txt.innerHTML=`
+    <div class="name">${escapeHtml(j.name)}</div>
+    <div class="nums">
+      Inicial: <b>${formatBRL(j.initial)}</b><br/>
+      Remanescente: <b>${formatBRL(j.remaining)}</b>
+      ${isFinite(j.fines)?`<br/>Multas/Saída: <b>${formatBRL(j.fines)}</b>`:""}
+    </div>`;
+  card.appendChild(jar); card.appendChild(txt);
+  wrap.appendChild(card);
+}
+
+/* =============================================
+   LOOP PRINCIPAL
+============================================= */
+async function loadAll(){
+  setState("warn","Carregando...");
+  try{
+    const tasks=await loadFirst(TASK_SHEETS);
+    let metaRows=[];
+    try{ const metas=await loadFirst(META_SHEETS); metaRows=metas.rows; }catch(e){}
+    const metrics=computeTaskMetrics(tasks.rows);
+    const meta=parseMetaSheet(metaRows);
+    renderKPIs(metrics);
+    renderDepartments(metrics);
+    renderMeta(meta);
+    // Verifica celebrações DEPOIS de renderizar (tem os valores novos)
+    checkCelebrations(meta);
+    const now=new Date();
+    el("updatedAt").textContent=`${brDate(now)}, ${brTime(now)}`;
+    el("sourceInfo").textContent=`Aba: ${tasks.sheet}`;
+    setState("ok","Atualizado");
+    showDiag(false);
+  }catch(err){
+    setState("bad","Erro");
+    showDiag(true,err.msg,err.url);
+  }
+}
+
+/* =============================================
+   CLOCK + INIT
+============================================= */
+function tickClock(){ el("clock").textContent=new Date().toLocaleTimeString("pt-BR"); }
+setInterval(tickClock,1000); tickClock();
+loadAll();
+setInterval(loadAll,REFRESH_MS);
+
+// Desbloqueio de áudio no primeiro toque do usuário (política dos navegadores)
+document.addEventListener("click", ()=>{ try{ getAudioCtx().resume(); }catch(e){} }, {once:true});
+document.addEventListener("keydown", ()=>{ try{ getAudioCtx().resume(); }catch(e){} }, {once:true});
+</script>
+</body>
+</html>
