@@ -18,18 +18,22 @@
   <!-- Painel 1: Oportunidades Cora x Conta Junto (aba [Coraliados]) -->
   <iframe class="slide active" id="slide-cora" src="dashboard-cora-conta-junto-refinado.html" title="Oportunidades Cora x Conta Junto"></iframe>
 
-  <!-- Painel 2: Dashboard Operacional TV (abas tarefas / Metas e Acompanhamento) -->
+  <!-- Painel 2: Dashboard Operacional TV (aba tarefas) -->
   <iframe class="slide" id="slide-operacional" src="dashboard-operacional-tv.html" title="Dashboard Operacional Conta Junto"></iframe>
+
+  <!-- Painel 3: Novos Contratos do mês (aba [Novos Clientes]) -->
+  <iframe class="slide" id="slide-novos" src="dashboard-novos-clientes.html" title="Novos Contratos Conta Junto"></iframe>
 
 <script>
   // Troca de painel a cada 30 segundos.
-  // Ambos os iframes ficam sempre carregados (mesmo quando ocultos), então
+  // Todos os iframes ficam sempre carregados (mesmo quando ocultos), então
   // os timers internos de cada dashboard (relógio, atualização da planilha,
   // rotação de status/cliente) continuam rodando normalmente em segundo plano.
   const ROTATE_MS = 30000;
   const slides = [
     document.getElementById('slide-cora'),
     document.getElementById('slide-operacional'),
+    document.getElementById('slide-novos'),
   ];
   let current = 0;
 
