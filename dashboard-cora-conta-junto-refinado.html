@@ -410,7 +410,7 @@ function renderDonut(segments){
     <div class="donut-center">
       <div class="n" id="donutN">0</div>
       <div class="l">Oportunidades</div>
-      <div class="v" id="donutV">R$ 0/mês</div>
+      <div class="v" id="donutV">R$ 0 </div>
     </div>`;
 }
 
@@ -459,7 +459,7 @@ function renderCardPage(){
           </div>
           <div class="cs-meta-item">
             <span class="k">Potencial de comissão</span>
-            <span class="v gold">${val ? fmtBRL(val)+'/mês' : '—'}</span>
+            <span class="v gold">${val ? fmtBRL(val)+' ' : '—'}</span>
           </div>
         </div>
       </div>`;
@@ -563,7 +563,7 @@ function refreshDashboard(clients){
 
   // KPIs
   document.getElementById('kpiOppCount').textContent = oppClients.length;
-  document.getElementById('kpiOppValue').innerHTML = fmtBRL(oppValue) + '<small>/mês</small>';
+  document.getElementById('kpiOppValue').innerHTML = fmtBRL(oppValue) + '<small> </small>';
 
   // donut
   renderDonut([
@@ -573,7 +573,7 @@ function refreshDashboard(clients){
     { label:'Encerrado', value:closedClients.length, color:'#64748B' },
   ]);
   document.getElementById('donutN').textContent = oppClients.length;
-  document.getElementById('donutV').textContent = fmtBRL(oppValue) + '/mês';
+  document.getElementById('donutV').textContent = fmtBRL(oppValue) + ' ';
 
   // legend
   const legendData = [
@@ -593,11 +593,11 @@ function refreshDashboard(clients){
   statusItems = OPPORTUNITY_STATUSES.map(s => {
     const items = byStatus[s]||[];
     const val = items.reduce((a,c)=>a+teamCommission(c.type),0);
-    return { label:STATUS_LABEL[s], count:items.length, sub:fmtBRL(val)+'/mês', color:STATUS_COLOR[s], def:STATUS_DEF[s] };
+    return { label:STATUS_LABEL[s], count:items.length, sub:fmtBRL(val)+' ', color:STATUS_COLOR[s], def:STATUS_DEF[s] };
   }).filter(s => s.count > 0);
   if(!statusItems.length){
     // se não houver nenhuma oportunidade aberta, mostra os três status zerados mesmo assim
-    statusItems = OPPORTUNITY_STATUSES.map(s => ({ label:STATUS_LABEL[s], count:0, sub:'R$\u00A00/mês', color:STATUS_COLOR[s], def:STATUS_DEF[s] }));
+    statusItems = OPPORTUNITY_STATUSES.map(s => ({ label:STATUS_LABEL[s], count:0, sub:'R$\u00A00 ', color:STATUS_COLOR[s], def:STATUS_DEF[s] }));
   }
   statusIdx = 0;
   renderStatusSingle();
