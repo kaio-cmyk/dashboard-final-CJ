@@ -70,9 +70,12 @@
 
     main{
       display:grid; 
-      grid-template-columns: 1fr 650px; 
+      grid-template-columns: 1fr 340px; 
       gap:18px; 
       min-height:0;
+    }
+    main.main-full{
+      grid-template-columns: 1fr;
     }
 
     .panel{
@@ -401,37 +404,13 @@
       </div>
     </header>
 
-    <main>
+    <main class="main-full">
       <section class="panel">
         <div class="sectionHeader">
           <h2>📊 Status de Tarefas</h2>
           <span class="badge">Top 6 Depts</span>
         </div>
         <div class="deptGrid" id="deptGrid"></div>
-      </section>
-
-      <section class="sidebarContent">
-        <div class="sideCard">
-          <div class="sectionHeader"><h2>📌 Visão Geral</h2></div>
-          <div class="kpis">
-            <div class="kpi accent"><div class="label">Total</div><div class="value" id="k_total">—</div></div>
-            <div class="kpi blue"><div class="label">Abertas</div><div class="value" id="k_open">—</div></div>
-            <div class="kpi green"><div class="label">Concluídas</div><div class="value" id="k_done">—</div></div>
-            <div class="kpi red"><div class="label">Em atraso</div><div class="value" id="k_late">—</div></div>
-            <div class="kpi amber"><div class="label">Vencem hoje</div><div class="value" id="k_today">—</div></div>
-            <div class="kpi"><div class="label">Próx. 7 dias</div><div class="value" id="k_next7">—</div></div>
-          </div>
-        </div>
-
-        <div class="sideCard">
-          <div class="sectionHeader"><h2>📈 Acompanhamento</h2></div>
-          <div class="miniKpis" id="metaContainer"></div>
-        </div>
-
-        <div class="sideCard" style="flex:1; display:flex; flex-direction:column;">
-          <div class="sectionHeader"><h2>🏺 Potes de Resultado</h2></div>
-          <div class="jars" id="jars"></div>
-        </div>
       </section>
     </main>
 
@@ -1022,15 +1001,8 @@ async function loadAll(){
   setState("warn","Carregando...");
   try{
     const tasks=await loadFirst(TASK_SHEETS);
-    let metaRows=[];
-    try{ const metas=await loadFirst(META_SHEETS); metaRows=metas.rows; }catch(e){}
     const metrics=computeTaskMetrics(tasks.rows);
-    const meta=parseMetaSheet(metaRows);
-    renderKPIs(metrics);
     renderDepartments(metrics);
-    renderMeta(meta);
-    // Verifica celebrações DEPOIS de renderizar (tem os valores novos)
-    checkCelebrations(meta);
     const now=new Date();
     el("updatedAt").textContent=`${brDate(now)}, ${brTime(now)}`;
     el("sourceInfo").textContent=`Aba: ${tasks.sheet}`;
