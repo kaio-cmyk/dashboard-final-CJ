@@ -24,16 +24,20 @@
   <!-- Painel 3: Novos Contratos do mês (aba [Novos Clientes]) -->
   <iframe class="slide" id="slide-novos" src="dashboard-novos-clientes.html" title="Novos Contratos Conta Junto"></iframe>
 
+  <!-- Painel 4: Atendimento da equipe (aba [Atendimento]) -->
+  <iframe class="slide" id="slide-atendimento" src="dashboard-atendimento.html" title="Atendimento Conta Junto"></iframe>
+
 <script>
   // Troca de painel a cada 30 segundos.
   // Todos os iframes ficam sempre carregados (mesmo quando ocultos), então
   // os timers internos de cada dashboard (relógio, atualização da planilha,
   // rotação de status/cliente) continuam rodando normalmente em segundo plano.
-  const ROTATE_MS = 300000;
+  const ROTATE_MS = 30000;
   const slides = [
     document.getElementById('slide-cora'),
     document.getElementById('slide-operacional'),
     document.getElementById('slide-novos'),
+    document.getElementById('slide-atendimento'),
   ];
   let current = 0;
 
