@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atendimento — Conta Junto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F4F8;
+    --panel:#FFFFFF;
+    --panel-2:#FCFCFE;
+    --border-color:#E4E7EE;
+    --line:#E7E9F0;
+    --text-primary:#171A22;
+    --text-secondary:#667085;
+    --ink:#171A22;
+    --cora:#E31C56;
+    --cora-soft:rgba(227,28,86,.10);
+    --cj:#3654E0;
+    --cj-soft:rgba(54,84,224,.10);
+    --green:#16A34A;
+    --rust:#DC5B2E;
+    --slate:#64748B;
+    --blue:#2E86D6;
+    --blue-soft:rgba(46,134,214,.12);
+    --maroon:#9C2F56;
+    --amber:#C77A11;
+
+    --space-2xs: 10px;
+    --space-xs:  14px;
+    --space-sm:  19px;
+    --space-md:  24px;
+    --space-lg:  34px;
+    --space-xl:  43px;
+
+    --radius-sm: 14px;
+    --radius-md: 19px;
+
+    --font-xs:   18px;
+    --font-sm:   19px;
+    --font-base: 21px;
+    --font-md:   25px;
+    --font-lg:   34px;
+    --font-xl:   42px;
+    --font-hero: clamp(51px, 7.9vw, 72px);
+
+    --shadow-card: 0 2px 14px -4px rgba(23,26,34,.10);
+    --content-max: 1760px;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; height:100%; }
+  html, body{ height:100%; margin:0; overflow:hidden; }
+  body{
+    background:
+      radial-gradient(ellipse 1200px 700px at 12% -10%, rgba(54,84,224,.06), transparent 60%),
+      radial-gradient(ellipse 900px 600px at 105% 10%, rgba(227,28,86,.05), transparent 55%),
+      var(--bg);
+    color:var(--text-primary);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .dashboard{
+    max-width:var(--content-max);
+    height:100vh;
+    margin:0 auto;
+    padding: clamp(14px, 1.8vh, 24px) clamp(20px, 3vw, 40px);
+    display:flex;
+    flex-direction:column;
+    gap: clamp(10px, 1.4vh, 18px);
+    overflow:hidden;
+  }
+
+  /* ---------------- HEADER ---------------- */
+  header{ flex:0 0 auto; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-md); }
+  .brand{ display:flex; align-items:center; gap:var(--space-sm); min-width:0; }
+  .brand .glyph{
+    width:58px; height:58px; min-width:58px; border-radius:22%;
+    background:linear-gradient(155deg, var(--cj), #1F35A8);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'Fraunces', serif; font-weight:600; color:#fff; font-size:var(--font-md);
+    box-shadow:0 6px 18px -6px rgba(54,84,224,.35);
+  }
+  .brand .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); letter-spacing:.13em; text-transform:uppercase; color:var(--text-secondary); font-weight:600; line-height:1.5; }
+  .brand h1{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(32px, 4.0vw, 45px); margin:5px 0 0; letter-spacing:-0.01em; line-height:1.25; }
+  .brand h1 em{ color:var(--cj); font-style:italic; font-weight:500; }
+
+  .headright{ display:flex; align-items:center; gap:var(--space-md); flex-shrink:0; }
+  .clock{ text-align:right; font-family:'IBM Plex Mono', monospace; line-height:1.4; }
+  .clock .time{ font-size:var(--font-lg); font-weight:600; letter-spacing:.02em; }
+
+  /* ---------------- KPI ROW ---------------- */
+  .kpi-row{ flex:0 0 auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(228px, 1fr)); gap:var(--space-sm); }
+  .kpi-tile{
+    background:linear-gradient(175deg, var(--panel), var(--panel-2)); border:1px solid var(--border-color); border-radius:var(--radius-md);
+    padding:var(--space-md) var(--space-lg); display:flex; flex-direction:column; justify-content:center; gap:6px;
+    box-shadow:var(--shadow-card); min-width:0;
+  }
+  .kpi-tile .lbl{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.06em; color:var(--text-secondary); font-weight:600; line-height:1.4; }
+  .kpi-tile .val{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-xl); line-height:1.2; color:var(--cj); word-break:break-word; }
+  .kpi-tile .val small{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-md); font-weight:600; color:var(--text-secondary); margin-left:6px; }
+  .kpi-tile.alt .val{ color:var(--cora); }
+  .kpi-tile.neutral .val{ color:var(--ink); }
+
+  /* ---------------- MAIN GRID ---------------- */
+  main{ flex:1 1 auto; min-height:0; display:grid; grid-template-columns: minmax(360px, .85fr) minmax(360px, 1.15fr); gap:var(--space-md); align-items:stretch; }
+
+  .panel{
+    background:linear-gradient(175deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border-color); border-radius:var(--radius-md); padding:var(--space-md);
+    box-shadow:var(--shadow-card);
+    min-height:0; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .panel-title{
+    font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); text-transform:uppercase; letter-spacing:.08em;
+    color:var(--text-secondary); font-weight:600; margin:0 0 var(--space-sm); flex:0 0 auto;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px var(--space-sm);
+    line-height:1.5;
+  }
+  .panel-title > *{ min-width:0; overflow-wrap:break-word; }
+  .panel-title b{ color:var(--ink); font-weight:700; }
+
+  /* ---- status: donut + legenda ---- */
+  .status-panel{ flex-direction:row; flex-wrap:wrap; align-items:center; gap:var(--space-lg); }
+  .status-panel .panel-title{ width:100%; }
+  .donut-wrap{ position:relative; width:min(230px, 24vh); height:min(230px, 24vh); min-width:150px; min-height:150px; flex-shrink:0; margin:0 auto; }
+  .donut-wrap svg circle{ transition: stroke-dasharray .6s ease, stroke-dashoffset .6s ease; }
+  .donut-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:var(--space-xs); overflow:hidden; }
+  .donut-center .n{ font-family:'Fraunces', serif; font-weight:700; font-size:var(--font-hero); color:var(--cj); line-height:1; }
+  .donut-center .l{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); margin-top:6px; letter-spacing:.03em; line-height:1.3; }
+
+  .legend-col{ display:flex; flex-direction:column; gap:var(--space-xs); justify-content:center; min-width:220px; flex:1; min-height:0; overflow-y:auto; }
+  .legend-row{ display:flex; align-items:center; gap:var(--space-sm); }
+  .legend-row .sw{ width:15px; height:15px; border-radius:4px; flex-shrink:0; }
+  .legend-row .txt{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .legend-row .lname{ font-size:var(--font-base); font-weight:600; line-height:1.35; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .legend-row .lsub{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); color:var(--text-secondary); line-height:1.4; }
+  .legend-row .lval{ margin-left:auto; padding-left:var(--space-md); font-family:'IBM Plex Mono', monospace; font-size:var(--font-lg); font-weight:700; flex-shrink:0; }
+
+  /* ---- ranking por responsável ---- */
+  #rankingList{ flex:1; min-height:0; display:flex; flex-direction:column; gap:var(--space-sm); overflow-y:auto; justify-content:center; }
+  .rank-row{ display:grid; grid-template-columns: minmax(120px, 220px) 1fr auto; align-items:center; gap:var(--space-sm); padding:6px 0; }
+  .rank-label{ font-size:var(--font-base); font-weight:600; line-height:1.4; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .rank-track{ height:11px; background:var(--line); border-radius:99px; overflow:hidden; }
+  .rank-fill{ height:100%; border-radius:99px; background:var(--cj); transition:width .5s ease; }
+  .rank-val{ font-family:'IBM Plex Mono', monospace; font-size:var(--font-base); font-weight:700; text-align:right; white-space:nowrap; line-height:1.4; color:var(--ink); }
+  .rank-val .sub{ color:var(--text-secondary); font-weight:500; font-size:var(--font-xs); display:block; margin-top:2px; }
+
+  .empty-note{ display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--text-secondary); font-size:var(--font-md); font-family:'IBM Plex Mono', monospace; text-align:center; padding:var(--space-md); line-height:1.5; }
+
+  .diag{
+    margin-top:var(--space-sm); padding:var(--space-sm); border-radius:var(--radius-sm);
+    border:1px solid rgba(220,38,38,.35); background:rgba(220,38,38,.06); color:#9C2F2F;
+    font-family:'IBM Plex Mono', monospace; font-size:var(--font-xs); line-height:1.5; display:none;
+  }
+  .diag.show{ display:block; }
+
+  @media (max-width: 1100px){
+    main{ grid-template-columns:1fr; }
+    html, body{ height:auto; overflow:auto; }
+    .dashboard{ height:auto; overflow:visible; }
+  }
+  @media (max-width: 640px){
+    .dashboard{ padding: var(--space-sm) var(--space-sm) var(--space-md); gap:var(--space-sm); }
+    .kpi-row{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="dashboard">
+
+    <header>
+      <div class="brand">
+        <div class="glyph">CJ</div>
+        <div>
+          <div class="eyebrow">Painel de atendimento · Equipe</div>
+          <h1>Atendimento <em id="monthLabel">este mês</em></h1>
+        </div>
+      </div>
+      <div class="headright">
+        <div class="clock">
+          <div class="time" id="clockTime">--:--</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="kpi-row">
+      <div class="kpi-tile">
+        <div class="lbl">Atendimentos no período</div>
+        <div class="val" id="kpiTotal">—</div>
+      </div>
+      <div class="kpi-tile alt">
+        <div class="lbl">Tempo médio de atendimento</div>
+        <div class="val" id="kpiAvgTime">—</div>
+      </div>
+      <div class="kpi-tile neutral">
+        <div class="lbl">Em aberto</div>
+        <div class="val" id="kpiOpen">—</div>
+      </div>
+    </div>
+
+    <main>
+      <div class="panel status-panel">
+        <div class="panel-title">Atendimentos por status</div>
+        <div class="donut-wrap" id="donutWrap"></div>
+        <div class="legend-col" id="legendCol"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Atendimentos por responsável</div>
+        <div id="rankingList"></div>
+        <div class="diag" id="diag"></div>
+      </div>
+    </main>
+
+  </div>
+
+<script>
+/* ===================== CONFIG / DATA SOURCE ===================== */
+const SHEET_ID = "16tFONc6OM2Z0I1q89jpPet9ulcgqOblsvGteaZHn8TY";
+const SHEET_TAB_CANDIDATES = ["[Atendimento]", "Atendimento"];
+const GVIZ_URL = (tabName) => `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tabName)}&_=` + Date.now();
+const AUTO_REFRESH_MS = 5 * 60 * 1000; // 5 minutos
+
+/* ===================== DETECÇÃO FLEXÍVEL DE COLUNAS =====================
+   Não temos acesso à planilha (é privada) para conferir o cabeçalho exato
+   da aba [Atendimento], então tentamos várias variações comuns de nome de
+   coluna. Se os nomes reais forem diferentes, ajuste as listas abaixo ou
+   me envie um CSV de exemplo que eu calibro certinho. */
+const FIELD_CANDIDATES = {
+  date:        ["Data do Atendimento", "Data de Abertura", "Data de Contato", "Data"],
+  client:      ["Cliente - Nome", "Cliente Nome", "Nome do Cliente", "Cliente"],
+  responsible: ["Responsável pelo Atendimento", "Responsável", "Atendente", "Agente", "Colaborador"],
+  status:      ["Status do Atendimento", "Status", "Situação"],
+  channel:     ["Canal de Atendimento", "Canal", "Meio"],
+  duration:    ["Tempo de Atendimento (min)", "Tempo de Atendimento", "Duração (min)", "Duração", "Minutos", "Tempo"],
+};
+
+function normHeader(h){
+  return String(h||"").trim().toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+function findColumn(headers, candidates){
+  const normed = headers.map(normHeader);
+  for(const cand of candidates){
+    const nc = normHeader(cand);
+    const idx = normed.indexOf(nc);
+    if(idx !== -1) return headers[idx];
+  }
+  for(const cand of candidates){
+    const nc = normHeader(cand);
+    const idx = normed.findIndex(h => h.includes(nc) || nc.includes(h));
+    if(idx !== -1) return headers[idx];
+  }
+  return null;
+}
+
+/* ===================== CSV PARSE ===================== */
+function parseCSV(text){
+  const rows = []; let row=[], field='', inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i], n=text[i+1];
+    if(inQ){
+      if(c==='"' && n==='"'){ field+='"'; i++; }
+      else if(c==='"'){ inQ=false; }
+      else field+=c;
+    } else {
+      if(c==='"') inQ=true;
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\r'){}
+      else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else field+=c;
+    }
+  }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length>1 || (r.length===1 && r[0]!==''));
+}
+
+function parseDateFlex(v){
+  if(!v) return null;
+  const s = String(v).trim();
+  if(!s) return null;
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(`${m[1]}-${m[2]}-${m[3]}T00:00:00`);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m) return new Date(`${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}T00:00:00`);
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function parseNumberFlex(v){
+  if(v===null||v===undefined) return null;
+  const s = String(v).trim();
+  if(!s) return null;
+  const cleaned = s.replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',', '.');
+  const n = Number(cleaned);
+  return isNaN(n) ? null : n;
+}
+
+function parseAtendimentos(csvText){
+  const rows = parseCSV(csvText);
+  if(!rows.length) throw new Error('Planilha vazia');
+  const headers = rows[0].map(h => h.trim());
+  const col = {
+    date: findColumn(headers, FIELD_CANDIDATES.date),
+    client: findColumn(headers, FIELD_CANDIDATES.client),
+    responsible: findColumn(headers, FIELD_CANDIDATES.responsible),
+    status: findColumn(headers, FIELD_CANDIDATES.status),
+    channel: findColumn(headers, FIELD_CANDIDATES.channel),
+    duration: findColumn(headers, FIELD_CANDIDATES.duration),
+  };
+  if(!col.status && !col.responsible){
+    throw Object.assign(new Error('Não encontrei colunas de status nem de responsável.'), { headers });
+  }
+  const idx = {};
+  Object.keys(col).forEach(k => { idx[k] = col[k] ? headers.indexOf(col[k]) : -1; });
+
+  const items = rows.slice(1)
+    .filter(r => r.some(v => v && v.trim()))
+    .map(r => ({
+      client: idx.client !== -1 ? (r[idx.client]||'').trim() : '',
+      responsible: idx.responsible !== -1 ? (r[idx.responsible]||'').trim() : '',
+      status: idx.status !== -1 ? (r[idx.status]||'').trim() : '',
+      channel: idx.channel !== -1 ? (r[idx.channel]||'').trim() : '',
+      date: idx.date !== -1 ? parseDateFlex(r[idx.date]) : null,
+      duration: idx.duration !== -1 ? parseNumberFlex(r[idx.duration]) : null,
+    }))
+    .filter(x => x.client || x.responsible || x.status);
+
+  return { items, headers, col };
+}
+
+const fmtMinutes = n => {
+  if(n===null || n===undefined || isNaN(n)) return '—';
+  const total = Math.round(n);
+  const h = Math.floor(total/60), m = total%60;
+  return h>0 ? `${h}h ${String(m).padStart(2,'0')}min` : `${m} min`;
+};
+
+function monthStart(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function isSameMonth(d, ref){ return d && d.getFullYear()===ref.getFullYear() && d.getMonth()===ref.getMonth(); }
+
+const STATUS_PALETTE = ['#3654E0', '#16A34A', '#E31C56', '#C77A11', '#64748B', '#2E86D6', '#9C2F56', '#DC5B2E'];
+
+/* ===================== DONUT CHART ===================== */
+function renderDonut(segments){
+  const size=280, thickness=42, gap=10;
+  const total = segments.reduce((a,s)=>a+s.value,0) || 1;
+  const r = (size-thickness)/2, c = 2*Math.PI*r, cx=size/2, cy=size/2;
+  let cursor=0;
+  const circles = segments.map(s => {
+    const raw = (s.value/total)*c;
+    const len = Math.max(0, raw-gap);
+    const dashoffset = -(cursor + gap/2);
+    cursor += raw;
+    return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${thickness}"
+      stroke-dasharray="${len} ${c-len}" stroke-dashoffset="${dashoffset}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt" />`;
+  }).join('');
+  document.getElementById('donutWrap').innerHTML = `
+    <svg viewBox="0 0 ${size} ${size}" width="100%" height="100%">${circles}</svg>
+    <div class="donut-center">
+      <div class="n" id="donutN">0</div>
+      <div class="l">atendimentos</div>
+    </div>`;
+}
+
+function renderStatusPanel(items){
+  const withStatus = items.filter(i => i.status);
+  if(!withStatus.length){
+    document.getElementById('donutWrap').innerHTML = '';
+    document.getElementById('legendCol').innerHTML = `<div class="empty-note">Sem coluna de status identificada nesta planilha.</div>`;
+    return;
+  }
+  const counts = new Map();
+  withStatus.forEach(i => counts.set(i.status, (counts.get(i.status)||0) + 1));
+  const list = [...counts.entries()].sort((a,b) => b[1]-a[1]);
+  const total = withStatus.length;
+
+  const segments = list.map(([name, n], i) => ({ label:name, value:n, color: STATUS_PALETTE[i % STATUS_PALETTE.length] }));
+  renderDonut(segments);
+  document.getElementById('donutN').textContent = total;
+
+  document.getElementById('legendCol').innerHTML = list.map(([name, n], i) => {
+    const pct = Math.round((n/total)*100);
+    const color = STATUS_PALETTE[i % STATUS_PALETTE.length];
+    return `
+    <div class="legend-row">
+      <span class="sw" style="background:${color}"></span>
+      <div class="txt"><span class="lname">${name}</span><span class="lsub">${pct}% do total</span></div>
+      <span class="lval" style="color:${color}">${n}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== RANKING POR RESPONSÁVEL ===================== */
+function renderRanking(items){
+  const el = document.getElementById('rankingList');
+  const withResp = items.filter(i => i.responsible);
+  if(!withResp.length){
+    el.innerHTML = `<div class="empty-note">Sem coluna de responsável identificada nesta planilha.</div>`;
+    return;
+  }
+  const byResp = new Map();
+  withResp.forEach(i => {
+    if(!byResp.has(i.responsible)) byResp.set(i.responsible, { count:0, durations:[] });
+    const r = byResp.get(i.responsible);
+    r.count++;
+    if(i.duration!==null && !isNaN(i.duration)) r.durations.push(i.duration);
+  });
+  const list = [...byResp.entries()].sort((a,b) => b[1].count-a[1].count);
+  const max = Math.max(1, ...list.map(([,r]) => r.count));
+  el.innerHTML = list.map(([name, r]) => {
+    const avg = r.durations.length ? r.durations.reduce((a,b)=>a+b,0)/r.durations.length : null;
+    return `
+    <div class="rank-row">
+      <div class="rank-label">${name}</div>
+      <div class="rank-track"><div class="rank-fill" style="width:${(r.count/max*100)}%"></div></div>
+      <div class="rank-val">${r.count}${avg!==null ? `<span class="sub">${fmtMinutes(avg)} em média</span>` : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== KPIs ===================== */
+const MONTH_NAMES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const OPEN_STATUS_HINTS = ["aberto", "em andamento", "pendente", "aguardando", "em atendimento"];
+
+function renderKPIs(items){
+  const total = items.length;
+  const withDuration = items.filter(i => i.duration!==null && !isNaN(i.duration));
+  const avgDuration = withDuration.length
+    ? withDuration.reduce((a,i)=>a+i.duration,0) / withDuration.length
+    : null;
+  const openCount = items.filter(i => {
+    const s = normHeader(i.status);
+    return s && OPEN_STATUS_HINTS.some(hint => s.includes(hint));
+  }).length;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiAvgTime').textContent = avgDuration!==null ? fmtMinutes(avgDuration) : '—';
+  document.getElementById('kpiOpen').textContent = openCount;
+
+  const now = new Date();
+  document.getElementById('monthLabel').textContent = `em ${MONTH_NAMES[now.getMonth()]}`;
+}
+
+/* ===================== DIAGNÓSTICO ===================== */
+function showDiag(show, msg){
+  const box = document.getElementById('diag');
+  box.classList.toggle('show', !!show);
+  if(show) box.textContent = msg;
+}
+
+/* ===================== RENDER PRINCIPAL ===================== */
+function refreshDashboard(parsed){
+  const { items } = parsed;
+  const now = new Date();
+  const itemsWithDate = items.filter(i => i.date);
+  const monthItems = itemsWithDate.length
+    ? items.filter(i => isSameMonth(i.date, now))
+    : items;
+
+  renderKPIs(monthItems);
+  renderStatusPanel(monthItems);
+  renderRanking(monthItems);
+}
+
+/* ===================== CLOCK ===================== */
+function tickClock(){
+  document.getElementById('clockTime').textContent = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+}
+tickClock();
+setInterval(tickClock, 15000);
+
+/* ===================== LIVE SYNC ===================== */
+async function fetchLive(){
+  let lastErr = null;
+  for(const tabName of SHEET_TAB_CANDIDATES){
+    try{
+      const res = await fetch(GVIZ_URL(tabName), { cache:'no-store' });
+      if(!res.ok) throw new Error('HTTP ' + res.status + ' (aba "' + tabName + '")');
+      const text = await res.text();
+      const parsed = parseAtendimentos(text);
+      if(!parsed.items.length) throw new Error('vazio (aba "' + tabName + '")');
+      refreshDashboard(parsed);
+      showDiag(false);
+      console.log(`[sync:ok] aba "${tabName}" · colunas detectadas:`, parsed.col);
+      return;
+    } catch(err){
+      lastErr = err;
+    }
+  }
+  console.error('Falha ao sincronizar com a planilha (Atendimento):', lastErr);
+  const headerHint = lastErr && lastErr.headers ? ` Cabeçalhos encontrados: ${lastErr.headers.join(', ')}` : '';
+  showDiag(true, `Não foi possível carregar a aba "Atendimento": ${lastErr && lastErr.message ? lastErr.message : 'erro desconhecido'}.${headerHint}`);
+}
+
+fetchLive();
+setInterval(fetchLive, AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
